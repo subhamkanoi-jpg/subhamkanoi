@@ -226,6 +226,67 @@
   .const h3{font-size:1rem; color:var(--cream); letter-spacing:.1em}
   .const p{font-family:var(--mono); font-weight:300; font-size:.83rem; color:var(--dim); margin-top:.55rem; line-height:1.6}
 
+  /* ---- lineage map ---- */
+  .family-map{margin-top:2.7rem; position:relative}
+  .family-map::before{
+    content:""; position:absolute; left:50%; top:112px; bottom:34px; width:1px;
+    background:linear-gradient(to bottom, transparent, rgba(230,189,106,.38), rgba(191,74,90,.24), transparent);
+    opacity:.75;
+  }
+  .family-fold{
+    position:relative; margin-top:1.2rem; border:1px solid var(--line);
+    background:rgba(9,13,24,.32); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+  }
+  .family-fold .family-fold{margin:1.2rem 1rem 1rem}
+  .family-fold summary{
+    list-style:none; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:1rem 1.1rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--cream-2); transition:color .25s, background .25s;
+  }
+  .family-fold summary::-webkit-details-marker{display:none}
+  .family-fold summary:hover{color:var(--brass); background:rgba(230,189,106,.035)}
+  .family-fold summary::after{
+    content:"+"; flex:0 0 auto; color:var(--brass); font-size:1rem; line-height:1;
+    text-shadow:0 0 12px rgba(230,189,106,.28);
+  }
+  .family-fold[open] > summary{border-bottom:1px solid var(--line); color:var(--brass)}
+  .family-fold[open] > summary::after{content:"-"}
+  .family-panel{padding:1.3rem}
+  .family-row{position:relative; display:grid; gap:clamp(18px,3vw,32px); margin-bottom:2.2rem}
+  .family-row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .family-row.one{grid-template-columns:minmax(0,520px); justify-content:center}
+  .family-row.three{grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:0}
+  .family-row::after{
+    content:""; position:absolute; left:50%; bottom:-1.1rem; transform:translateX(-50%);
+    width:min(62%,560px); height:1px; background:linear-gradient(90deg, transparent, rgba(230,189,106,.32), transparent);
+  }
+  .family-row.three::after{display:none}
+  .family-node{
+    position:relative; border:1px solid var(--line); background:rgba(233,233,241,.015);
+    padding:1.15rem 1.2rem; min-height:112px; display:flex; flex-direction:column; justify-content:center;
+    box-shadow:0 20px 46px -38px rgba(0,0,0,.8);
+  }
+  .family-node::before{
+    content:""; position:absolute; inset:7px; border:1px solid rgba(230,189,106,.06); pointer-events:none;
+  }
+  .family-node.root{border-top-color:rgba(230,189,106,.38)}
+  .family-node.parent{border-color:rgba(230,189,106,.30); background:rgba(230,189,106,.025)}
+  .family-node.self{border-color:rgba(230,189,106,.55); background:rgba(230,189,106,.045); box-shadow:0 0 30px -20px rgba(230,189,106,.9)}
+  .family-focus{max-width:560px; margin:0 auto 1.4rem}
+  .family-tag{
+    font-family:var(--mono); font-size:.62rem; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--brass); margin-bottom:.55rem;
+  }
+  .family-name{font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--cream); font-size:clamp(.95rem,1.6vw,1.15rem); line-height:1.3}
+  .family-note{font-family:var(--mono); color:var(--dim); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; margin-top:.65rem}
+  .family-kids{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem}
+  .family-kids span{
+    border:1px solid var(--line); color:var(--cream-2); padding:.3rem .52rem; font-family:var(--mono);
+    font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; background:rgba(9,13,24,.42);
+  }
+  .family-node.self .family-tag{color:var(--terra)}
+  .family-node.self .family-name{color:var(--brass); text-shadow:0 0 16px rgba(230,189,106,.22)}
+
   /* ---- uplink ---- */
   .links{display:flex; flex-wrap:wrap; gap:11px; margin-top:2.4rem}
   .links a{
@@ -266,6 +327,15 @@
     .hud{gap:.7rem 1.3rem}
     .ml-console{padding:20px 15px}
     .ml-strip button{padding:.55rem .55rem}
+    .family-map::before{left:12px; top:28px; bottom:28px}
+    .family-fold .family-fold{margin:1rem 0 0}
+    .family-fold summary{padding:.9rem .95rem; letter-spacing:.12em}
+    .family-panel{padding:1rem .85rem}
+    .family-row.two,
+    .family-row.one,
+    .family-row.three{grid-template-columns:1fr; margin-bottom:1rem}
+    .family-row::after{display:none}
+    .family-node{min-height:auto; padding:1rem 1rem 1rem 1.25rem}
     .links{gap:9px}
     .links a{flex:1 1 42%; justify-content:center}
     .time-left{display:flex; gap:.45rem; padding:9px 10px; letter-spacing:.08em}
@@ -307,7 +377,8 @@
     <a href="#operations"><span class="dk-l">operations</span><span class="dk-n">02</span></a>
     <a href="#lunarlog"><span class="dk-l">lunar log</span><span class="dk-n">03</span></a>
     <a href="#constants"><span class="dk-l">constants</span><span class="dk-n">04</span></a>
-    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">05</span></a>
+    <a href="#lineage"><span class="dk-l">lineage</span><span class="dk-n">05</span></a>
+    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">06</span></a>
   </nav>
 
   <div class="wrap">
@@ -394,9 +465,91 @@
 
     <div class="divider"></div>
 
+    <!-- LINEAGE -->
+    <section id="lineage">
+      <p class="label reveal">// 05 &mdash; lineage</p>
+      <h2 class="reveal" data-d="1">Family tree.</h2>
+      <p class="lede reveal" data-d="2">two houses, two routes, one present node. mapped as memory, inheritance, and signal.</p>
+      <div class="family-map reveal" data-d="2" aria-label="Family tree">
+        <div class="family-node self family-focus">
+          <div class="family-tag">current node</div>
+          <div class="family-name">Subham Kanoi</div>
+          <div class="family-note">youngest child &middot; lineage in focus</div>
+        </div>
+        <details class="family-fold">
+          <summary>open ancestral branches</summary>
+          <div class="family-panel">
+            <div class="family-row two">
+              <div class="family-node root">
+                <div class="family-tag">paternal grandparents</div>
+                <div class="family-name">Late Ram Niwas Ji Kanoi<br/>&amp; Late Ram Pati Devi Kanoi</div>
+                <div class="family-note">5 children &middot; 2nd eldest: Om Prakash Kanoi</div>
+              </div>
+              <div class="family-node root">
+                <div class="family-tag">maternal grandparents</div>
+                <div class="family-name">Late Niranjan Lal Shah<br/>&amp; Mrs. Shah</div>
+                <div class="family-note">3 children &middot; eldest: Kiran Kanoi</div>
+              </div>
+            </div>
+            <details class="family-fold">
+              <summary>open parents</summary>
+              <div class="family-panel">
+                <div class="family-row two">
+                  <div class="family-node parent">
+                    <div class="family-tag">father</div>
+                    <div class="family-name">Om Prakash Kanoi</div>
+                    <div class="family-note">2nd eldest child</div>
+                  </div>
+                  <div class="family-node parent">
+                    <div class="family-tag">mother</div>
+                    <div class="family-name">Kiran Kanoi</div>
+                    <div class="family-note">eldest child</div>
+                  </div>
+                </div>
+                <div class="family-row one">
+                  <div class="family-node parent">
+                    <div class="family-tag">parents</div>
+                    <div class="family-name">Om Prakash Kanoi &amp; Kiran Kanoi</div>
+                    <div class="family-note">3 children</div>
+                    <div class="family-kids" aria-label="Children birth order">
+                      <span>eldest: Vandana</span><span>middle: Yogesh</span><span>youngest: Subham</span>
+                    </div>
+                  </div>
+                </div>
+                <details class="family-fold">
+                  <summary>open children</summary>
+                  <div class="family-panel">
+                    <div class="family-row three">
+                      <div class="family-node">
+                        <div class="family-tag">child 01</div>
+                        <div class="family-name">Vandana Kanoi</div>
+                        <div class="family-note">sibling</div>
+                      </div>
+                      <div class="family-node">
+                        <div class="family-tag">child 02</div>
+                        <div class="family-name">Yogesh Kanoi</div>
+                        <div class="family-note">sibling</div>
+                      </div>
+                      <div class="family-node self">
+                        <div class="family-tag">child 03</div>
+                        <div class="family-name">Subham Kanoi</div>
+                        <div class="family-note">youngest &middot; current node</div>
+                      </div>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </details>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
     <!-- UPLINK -->
     <section id="uplink">
-      <p class="label reveal">// 05 &mdash; uplink</p>
+      <p class="label reveal">// 06 &mdash; uplink</p>
       <h2 class="reveal" data-d="1">Open channel.</h2>
       <p class="lede reveal" data-d="2">food, work, kolkata, or the stars. the door stays open.</p>
       <div class="links reveal" data-d="2">
@@ -478,7 +631,7 @@
   // ---- section nav: scroll-spy (always marks the current section) ----
   (function(){
     const links=[...document.querySelectorAll('.dock a')]; if(!links.length) return;
-    const ids=['home','identity','operations','lunarlog','constants','uplink'];
+    const ids=['home','identity','operations','lunarlog','constants','lineage','uplink'];
     const map={}; links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
     let ticking=false, cur='';
     function update(){

@@ -65,6 +65,8 @@
   .star-tip .pt-name{font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--brass); font-size:.92rem}
   .star-tip .pt-sign{font-family:var(--mono); font-size:.64rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dim); margin:.25rem 0 .4rem}
   .star-tip .pt-line{font-family:var(--mono); font-size:.8rem; color:var(--cream-2); line-height:1.5; margin:0}
+  .star-tip .pt-meta{font-family:var(--mono); font-size:.58rem; letter-spacing:.16em; text-transform:uppercase; color:var(--terra); margin:.45rem 0 .35rem}
+  .star-tip .pt-key{font-family:var(--mono); font-size:.66rem; letter-spacing:.12em; text-transform:uppercase; color:var(--brass); margin-top:.5rem}
   .sky-hint{
     position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:6;
     font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase; color:var(--dim);
@@ -361,7 +363,7 @@
   <div class="lamp" id="lamp"></div>
   <canvas class="skycanvas" id="sky" aria-hidden="true"></canvas>
   <div class="star-tip" id="startip" role="status" aria-live="polite"></div>
-  <div class="sky-hint" id="skyhint">// move cursor &middot; hover a star</div>
+  <div class="sky-hint" id="skyhint">// move cursor &middot; find chart layers</div>
   <div class="vignette"></div>
   <div class="grain"></div>
 
@@ -675,6 +677,46 @@
       {n:'Ketu',    s:'in Aries',                m:'The old courage you were born already carrying.',                               nx:.64, ny:.70},
     ];
 
+    NATAL.forEach((p,i)=>{
+      const extra = [
+        ['Layer 01 / self gate / Anuradha tone','keyword: magnetism'],
+        ['Layer 02 / guru-light / water depth','keyword: generosity'],
+        ['Layer 03 / craft of affection','keyword: loyalty'],
+        ['Layer 04 / speech + commerce','keyword: precision'],
+        ['Layer 05 / inner hearth','keyword: collective'],
+        ['Layer 06 / structure + duty','keyword: endurance'],
+        ['Layer 07 / emotional weather','keyword: service'],
+        ['Layer 08 / shadow appetite','keyword: balance'],
+        ['Layer 09 / soul planet','keyword: protection'],
+        ['Layer 10 / old courage','keyword: release']
+      ][i] || ['Layer / natal point','keyword: signal'];
+      p.type='planet'; p.meta=extra[0]; p.key=extra[1];
+    });
+
+    const HOUSES = [
+      {type:'house', n:'House I', s:'Scorpio / body + identity', meta:'Hidden ring / whole-sign layer', key:'gate: self', m:'Intensity, privacy, stamina. The face the world meets first.', nx:.09, ny:.43},
+      {type:'house', n:'House II', s:'Sagittarius / resources', meta:'Hidden ring / whole-sign layer', key:'gate: value', m:'Food, speech, family wealth, and the ethics of earning.', nx:.17, ny:.22},
+      {type:'house', n:'House III', s:'Capricorn / hands + effort', meta:'Hidden ring / whole-sign layer', key:'gate: craft', m:'Skills built by repetition. The daily courage to make the call.', nx:.36, ny:.12},
+      {type:'house', n:'House IV', s:'Aquarius / home + roots', meta:'Hidden ring / whole-sign layer', key:'gate: hearth', m:'Home as systems, memory, people, and the engine under the floor.', nx:.61, ny:.12},
+      {type:'house', n:'House V', s:'Pisces / joy + creation', meta:'Hidden ring / whole-sign layer', key:'gate: play', m:'Faith, intuition, and the private imagination that keeps life soft.', nx:.82, ny:.23},
+      {type:'house', n:'House VI', s:'Aries / work + friction', meta:'Hidden ring / whole-sign layer', key:'gate: grind', m:'Competition, illness, service, and the battles that make competence real.', nx:.91, ny:.43},
+      {type:'house', n:'House VII', s:'Taurus / partners', meta:'Hidden ring / whole-sign layer', key:'gate: bond', m:'Contracts, companionship, and the people who ask you to become steadier.', nx:.84, ny:.66},
+      {type:'house', n:'House VIII', s:'Gemini / transformation', meta:'Hidden ring / whole-sign layer', key:'gate: mystery', m:'Shared risk, secrets, research, crisis, and the second life after collapse.', nx:.64, ny:.80},
+      {type:'house', n:'House IX', s:'Cancer / faith + distance', meta:'Hidden ring / whole-sign layer', key:'gate: dharma', m:'Pilgrimage, teachers, long roads, and the protection of belief.', nx:.39, ny:.80},
+      {type:'house', n:'House X', s:'Leo / public work', meta:'Hidden ring / whole-sign layer', key:'gate: legacy', m:'Reputation, leadership, visibility, and work that must carry your name.', nx:.16, ny:.66},
+      {type:'house', n:'House XI', s:'Virgo / networks + gains', meta:'Hidden ring / whole-sign layer', key:'gate: harvest', m:'Teams, systems, useful friends, and the practical shape of ambition.', nx:.07, ny:.55},
+      {type:'house', n:'House XII', s:'Libra / retreat + unseen rooms', meta:'Hidden ring / whole-sign layer', key:'gate: surrender', m:'Sleep, travel, expenses, solitude, and the balance kept offstage.', nx:.08, ny:.33},
+    ];
+    const POINTS = [...NATAL, ...HOUSES];
+    const ASPECTS = [
+      ['Jupiter','Mars','trine / water remembers'],
+      ['Sun','Saturn','conjunction / duty with identity'],
+      ['Moon','Saturn','conjunction / feeling under discipline'],
+      ['Mercury','Venus','conjunction / speech with grace'],
+      ['Rahu','Ketu','axis / hunger and release'],
+      ['Ascendant','Jupiter','rising blessing']
+    ];
+
     function resize(){
       CW=innerWidth; CH=innerHeight; DPR=Math.min(window.devicePixelRatio||1, 2);
       cv.width=Math.floor(CW*DPR); cv.height=Math.floor(CH*DPR);
@@ -724,6 +766,37 @@
       NATAL.forEach((p,i)=>{ const X=p.nx*CW+ox*.022, Y=p.ny*CH+oy*.022; p._X=X; p._Y=Y; i?ctx.lineTo(X,Y):ctx.moveTo(X,Y); });
       ctx.stroke();
 
+      HOUSES.forEach((p,i)=>{
+        p._X=p.nx*CW+ox*.014; p._Y=p.ny*CH+oy*.014;
+        const hot=NATAL.length+i===hover, pulse=reduce?1:(.78+.22*Math.sin(t*1.4+i*.7));
+        ctx.beginPath(); ctx.arc(p._X,p._Y,(hot?4.4:2.2)*pulse,0,6.283);
+        ctx.fillStyle=hot?'rgba(191,74,90,.95)':'rgba(191,74,90,.38)';
+        ctx.fill();
+        if(hot){
+          ctx.beginPath(); ctx.arc(p._X,p._Y,18,0,6.283);
+          ctx.strokeStyle='rgba(191,74,90,.32)'; ctx.lineWidth=1; ctx.stroke();
+        }
+      });
+
+      if(hover>=0 && hover<NATAL.length){
+        const active=NATAL[hover];
+        ASPECTS.forEach(a=>{
+          if(a[0]!==active.n && a[1]!==active.n) return;
+          const p1=NATAL.find(p=>p.n===a[0]), p2=NATAL.find(p=>p.n===a[1]);
+          if(!p1 || !p2) return;
+          ctx.save();
+          ctx.setLineDash([4,8]);
+          ctx.strokeStyle='rgba(191,74,90,.34)';
+          ctx.lineWidth=1.15;
+          ctx.beginPath(); ctx.moveTo(p1._X,p1._Y); ctx.lineTo(p2._X,p2._Y); ctx.stroke();
+          ctx.setLineDash([]);
+          const mx=(p1._X+p2._X)/2, my=(p1._Y+p2._Y)/2;
+          ctx.beginPath(); ctx.arc(mx,my,2.4,0,6.283);
+          ctx.fillStyle='rgba(230,189,106,.75)'; ctx.fill();
+          ctx.restore();
+        });
+      }
+
       NATAL.forEach((p,i)=>{
         const hot=i===hover, pulse=reduce?1:(.82+.18*Math.sin(t*2+i));
         const rad=(hot?6.5:4.0)*pulse, X=p._X, Y=p._Y;
@@ -765,20 +838,20 @@
       ptr.x=e.clientX; ptr.y=e.clientY; ptr.on=true;
       const hitR=(e && e.pointerType==='touch') ? 44 : 28;   // bigger target for fingers
       let best=-1, bd=hitR*hitR;
-      for(let i=0;i<NATAL.length;i++){
-        const p=NATAL[i], X=(p._X!=null?p._X:p.nx*CW), Y=(p._Y!=null?p._Y:p.ny*CH);
+      for(let i=0;i<POINTS.length;i++){
+        const p=POINTS[i], X=(p._X!=null?p._X:p.nx*CW), Y=(p._Y!=null?p._Y:p.ny*CH);
         const dx=X-ptr.x, dy=Y-ptr.y, d2=dx*dx+dy*dy;
         if(d2<bd){bd=d2; best=i;}
       }
       if(best!==hover){
         hover=best;
         if(best>=0){
-          const p=NATAL[best];
-          tip.innerHTML='<div class="pt-name">'+p.n+'</div><div class="pt-sign">'+p.s+'</div><p class="pt-line">'+p.m+'</p>';
+          const p=POINTS[best];
+          tip.innerHTML='<div class="pt-name">'+p.n+'</div><div class="pt-sign">'+p.s+'</div><div class="pt-meta">'+(p.meta||'hidden layer')+'</div><p class="pt-line">'+p.m+'</p><div class="pt-key">'+(p.key||'keyword: signal')+'</div>';
           tip.classList.add('show'); dismissHint();
         } else { tip.classList.remove('show'); }
       }
-      if(hover>=0){ const p=NATAL[hover]; place(p._X!=null?p._X:p.nx*CW, p._Y!=null?p._Y:p.ny*CH); }
+      if(hover>=0){ const p=POINTS[hover]; place(p._X!=null?p._X:p.nx*CW, p._Y!=null?p._Y:p.ny*CH); }
       if(reduce) draw();
     }
     function clearTip(){ ptr.on=false; hover=-1; tip.classList.remove('show'); if(reduce) draw(); }
@@ -790,7 +863,7 @@
     addEventListener('pointerout', e=>{ if(!e.relatedTarget) clearTip(); }, {passive:true});
     addEventListener('scroll', ()=>{ if(ptr.on||hover>=0) clearTip(); }, {passive:true});
     addEventListener('resize', ()=>{ resize(); if(reduce) draw(); });
-    if(hint){ if(matchMedia('(hover:none)').matches) hint.innerHTML='&#10022;&nbsp; tap a star'; setTimeout(dismissHint, 8000); }
+    if(hint){ if(matchMedia('(hover:none)').matches) hint.innerHTML='&#10022;&nbsp; tap chart points'; setTimeout(dismissHint, 8000); }
 
     resize(); draw();
   })();

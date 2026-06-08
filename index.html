@@ -74,7 +74,7 @@
   }
   .sky-hint.gone{opacity:0}
   @media (max-width:680px){
-    .sky-hint{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 50px); font-size:.6rem; }
+    .sky-hint{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 86px); font-size:.6rem; }
   }
   .vignette{
     position:fixed; inset:0; z-index:1; pointer-events:none;
@@ -102,6 +102,20 @@
   a.corner.l::before{content:"\2191 "; opacity:.6}
   a.corner.l:hover{color:var(--brass)}
   .corner a{color:var(--brass); text-decoration:none}
+  .uptime{
+    position:fixed; top:clamp(14px,2.2vw,24px); left:50%; transform:translateX(-50%);
+    z-index:25; display:flex; align-items:baseline; gap:.7rem;
+    font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--dim); background:rgba(9,13,24,.62); border:1px solid var(--line);
+    border-radius:2px; padding:7px 13px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
+    box-shadow:0 12px 28px -20px rgba(0,0,0,.9);
+  }
+  .ut-k{color:var(--brass)}
+  .ut-v{
+    color:var(--cream); font-variant-numeric:tabular-nums; letter-spacing:.08em;
+    min-width:32ch; text-align:right;
+    text-shadow:0 0 14px rgba(230,189,106,.28);
+  }
 
   /* ---- section nav (anchor dock) ---- */
   .dock{
@@ -225,14 +239,28 @@
     text-align:center; padding:clamp(46px,8vh,80px) 20px clamp(36px,6vh,64px);
     font-family:var(--mono); font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--faint);
   }
+  .time-left{
+    display:inline-flex; align-items:baseline; justify-content:center; gap:.7rem; flex-wrap:wrap;
+    max-width:calc(100vw - 40px); margin:0 auto 1.4rem; padding:9px 14px;
+    border:1px solid rgba(230,189,106,.22); background:rgba(9,13,24,.54);
+    border-radius:2px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
+    box-shadow:0 14px 32px -24px rgba(230,189,106,.55);
+  }
+  .tl-k{color:var(--terra)}
+  .tl-v{
+    color:var(--cream); font-variant-numeric:tabular-nums; letter-spacing:.08em;
+    text-shadow:0 0 14px rgba(191,74,90,.30);
+  }
+  .footer-meta{color:var(--faint)}
   footer .diya{color:var(--brass); animation:flicker 3.5s ease-in-out infinite}
   @keyframes flicker{0%,100%{opacity:1}45%{opacity:.6}50%{opacity:.9}55%{opacity:.55}}
 
   /* ---- mobile fine-tuning ---- */
   @media (max-width:680px){
     body{font-size:15px}
+    .uptime{top:calc(env(safe-area-inset-top,0px) + 42px); font-size:.62rem; gap:.5rem; padding:6px 10px}
     section{padding-left:clamp(18px,5vw,28px); padding-right:clamp(18px,5vw,28px)}
-    .door{gap:30px; padding-top:104px; min-height:auto}
+    .door{gap:30px; padding-top:128px; min-height:auto}
     .door h1{font-size:clamp(2.5rem,13vw,3.4rem)}
     .portrait{max-width:330px; margin-inline:auto}
     .hud{gap:.7rem 1.3rem}
@@ -240,10 +268,12 @@
     .ml-strip button{padding:.55rem .55rem}
     .links{gap:9px}
     .links a{flex:1 1 42%; justify-content:center}
+    .time-left{display:flex; gap:.45rem; padding:9px 10px; letter-spacing:.08em}
     footer{padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}
   }
   @media (max-width:380px){
     .corner{font-size:.58rem; letter-spacing:.1em}
+    .uptime{font-size:.58rem; letter-spacing:.08em}
     .door h1{font-size:2.4rem}
     .links a{flex-basis:100%}
   }
@@ -267,8 +297,8 @@
   <a class="corner l" href="#home" aria-label="Back to top">SK&middot;OS / v2.6</a>
   <span class="corner r">22.57&deg;N 88.36&deg;E</span>
 
-  <div class="uptime" id="uptime" title="time alive on earth, since 01 Mar 1995 23:20 IST">
-    <span class="ut-k">uptime</span><span class="ut-v" id="utVal">0d 00:00:00</span>
+  <div class="uptime" id="uptime" role="timer" aria-live="off" title="years months days hours minutes seconds alive on earth, since 01 Mar 1995 23:20 IST">
+    <span class="ut-k">Alive</span><span class="ut-v" id="utVal">since 00Y : 0M : 0D : 00H : 00MIN : 00S</span>
   </div>
 
   <nav class="dock" id="dock" aria-label="Sections">
@@ -376,7 +406,12 @@
       </div>
     </section>
 
-    <footer>KOLKATA &middot; EST 1995 &middot; <span class="diya">&#10022;</span> &middot; UPTIME: ONGOING</footer>
+    <footer>
+      <div class="time-left" role="timer" aria-live="off" title="time left assuming 70 years on earth, until 01 Mar 2065 23:20 IST">
+        <span class="tl-k">Time Left</span><span class="tl-v" id="leftVal">00Y : 0M : 0D : 00H : 00MIN : 00S</span>
+      </div>
+      <div class="footer-meta">KOLKATA &middot; EST 1995 &middot; <span class="diya">&#10022;</span> &middot; UPTIME: ONGOING</div>
+    </footer>
 
   </div>
 
@@ -391,6 +426,54 @@
   goHome();
   addEventListener('load', goHome);
   addEventListener('pageshow', e=>{ if(e.persisted) goHome(); });   // bfcache restores
+
+  // ---- lifetime uptime: years months days hours minutes seconds since 01 Mar 1995, 23:20 IST ----
+  (function(){
+    const aliveOut = document.getElementById('utVal');
+    const leftOut = document.getElementById('leftVal');
+    if(!aliveOut && !leftOut) return;
+    const IST_OFFSET_MS = 330 * 60 * 1000;
+    const bornWall = Date.UTC(1995, 2, 1, 23, 20, 0);
+    const seventyWall = Date.UTC(2065, 2, 1, 23, 20, 0);
+    const pad = n => String(n).padStart(2, '0');
+    function addMonthsWall(wallTime, months){
+      const next = new Date(wallTime);
+      const day = next.getUTCDate();
+      next.setUTCDate(1);
+      next.setUTCMonth(next.getUTCMonth() + months);
+      const daysInMonth = new Date(Date.UTC(next.getUTCFullYear(), next.getUTCMonth() + 1, 0)).getUTCDate();
+      next.setUTCDate(Math.min(day, daysInMonth));
+      return next.getTime();
+    }
+    function partsBetween(startWall, endWall){
+      if(endWall <= startWall) return {years:0, months:0, days:0, hours:0, minutes:0, seconds:0};
+      const start = new Date(startWall);
+      const end = new Date(endWall);
+      let months = (end.getUTCFullYear() - start.getUTCFullYear()) * 12 + (end.getUTCMonth() - start.getUTCMonth());
+      if(addMonthsWall(startWall, months) > endWall) months--;
+      const elapsedMonths = Math.max(0, months);
+      const anchor = addMonthsWall(startWall, elapsedMonths);
+      const total = Math.max(0, Math.floor((endWall - anchor) / 1000));
+      return {
+        years:Math.floor(elapsedMonths / 12),
+        months:elapsedMonths % 12,
+        days:Math.floor(total / 86400),
+        hours:Math.floor(total / 3600) % 24,
+        minutes:Math.floor(total / 60) % 60,
+        seconds:total % 60
+      };
+    }
+    function format(p){
+      return p.years + 'Y : ' + p.months + 'M : ' + p.days + 'D : '
+        + pad(p.hours) + 'H : ' + pad(p.minutes) + 'MIN : ' + pad(p.seconds) + 'S';
+    }
+    function tick(){
+      const nowWall = Date.now() + IST_OFFSET_MS;
+      if(aliveOut) aliveOut.textContent = 'since ' + format(partsBetween(bornWall, nowWall));
+      if(leftOut) leftOut.textContent = format(partsBetween(nowWall, seventyWall));
+    }
+    tick(); setInterval(tick, 1000);
+  })();
 
   // ---- section nav: scroll-spy (always marks the current section) ----
   (function(){

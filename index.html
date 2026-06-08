@@ -12,7 +12,7 @@
 <meta property="og:title" content="Subham Kanoi — The Room" />
 <meta property="og:description" content="Kolkata boy. I feed people for a living. This is the room where I keep why." />
 <meta property="og:image" content="assets/img/og.jpg" />
-<meta name="theme-color" content="#15110e" />
+<meta name="theme-color" content="#0b0f1e" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -20,24 +20,25 @@
 
 <style>
   :root{
-    --ink:#15110e;
-    --ink-2:#1d1713;
-    --ink-3:#241c16;
-    --cream:#f4ead9;
-    --cream-2:#e6d8c2;
-    --dim:#b4a288;
-    --faint:#8a7a64;
-    --brass:#e3ad65;
-    --brass-deep:#b9823f;
-    --terra:#bd6442;
-    --line:rgba(244,234,217,0.10);
-    --line-2:rgba(244,234,217,0.06);
+    /* Still Water & Gold — Saturn indigo, Jupiter gold, Mars garnet, Moon silver */
+    --ink:#0b0f1e;        /* midnight indigo — Saturn, the Scorpio night sky */
+    --ink-2:#0f1426;
+    --ink-3:#161d36;
+    --cream:#ece8f2;      /* moonlight */
+    --cream-2:#d6d0e2;
+    --dim:#9a93ad;
+    --faint:#6c6582;
+    --brass:#e6bd6a;      /* Jupiter's gold — wisdom in the ascendant */
+    --brass-deep:#b98a36;
+    --terra:#bf4a5a;      /* Mars / Scorpio garnet — the soul's fire */
+    --line:rgba(236,232,242,0.10);
+    --line-2:rgba(236,232,242,0.06);
     --serif:"Fraunces", Georgia, "Times New Roman", serif;
     --sans:"Instrument Sans", system-ui, -apple-system, sans-serif;
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
+  html{scroll-behavior:smooth; overflow-x:hidden}
   @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
 
   body{
@@ -55,12 +56,31 @@
   .lamp{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     background:
-      radial-gradient(60vw 60vw at var(--mx,30%) var(--my,12%),
-        rgba(227,173,101,0.16), rgba(227,173,101,0.05) 32%, transparent 60%),
-      radial-gradient(80vw 70vw at 85% 110%,
-        rgba(189,100,66,0.10), transparent 55%);
+      radial-gradient(52vw 52vw at var(--mx,30%) var(--my,12%),
+        rgba(230,189,106,0.13), rgba(230,189,106,0.04) 34%, transparent 62%),
+      radial-gradient(70vw 60vw at 10% 6%, rgba(86,104,196,0.12), transparent 55%),
+      radial-gradient(80vw 72vw at 88% 112%, rgba(150,42,62,0.14), transparent 56%);
     transition:background .6s ease;
   }
+  /* a faint sky, because he reads it */
+  .sky{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.6;
+    background-repeat:no-repeat;
+    background-image:
+      radial-gradient(1.5px 1.5px at 18% 24%, rgba(230,189,106,.9), transparent),
+      radial-gradient(1px 1px at 33% 12%, rgba(236,232,242,.7), transparent),
+      radial-gradient(1px 1px at 62% 18%, rgba(236,232,242,.6), transparent),
+      radial-gradient(1.6px 1.6px at 82% 28%, rgba(230,189,106,.8), transparent),
+      radial-gradient(1px 1px at 47% 38%, rgba(236,232,242,.55), transparent),
+      radial-gradient(1px 1px at 12% 58%, rgba(236,232,242,.5), transparent),
+      radial-gradient(1.3px 1.3px at 73% 52%, rgba(230,189,106,.6), transparent),
+      radial-gradient(1px 1px at 90% 72%, rgba(236,232,242,.5), transparent),
+      radial-gradient(1px 1px at 28% 82%, rgba(230,189,106,.5), transparent),
+      radial-gradient(1px 1px at 58% 90%, rgba(236,232,242,.45), transparent);
+    animation:twinkle 6.5s ease-in-out infinite;
+  }
+  @keyframes twinkle{0%,100%{opacity:.45}50%{opacity:.75}}
+  @media (prefers-reduced-motion: reduce){.sky{animation:none}}
   .vignette{
     position:fixed; inset:0; z-index:1; pointer-events:none;
     box-shadow:inset 0 0 22vw 6vw rgba(0,0,0,0.55);
@@ -128,13 +148,13 @@
   .portrait{
     position:relative; align-self:center;
     padding:14px; border:1px solid var(--line);
-    background:linear-gradient(155deg,#2a211a,#1a1410);
+    background:linear-gradient(155deg,#1b2240,#0e1326);
     border-radius:3px;
-    box-shadow:0 40px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(227,173,101,.08);
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.85), 0 0 0 1px rgba(230,189,106,.10);
     transform:rotate(-1.1deg);
   }
   .portrait::before{
-    content:""; position:absolute; inset:5px; border:1px solid rgba(227,173,101,.18); border-radius:2px; pointer-events:none;
+    content:""; position:absolute; inset:5px; border:1px solid rgba(230,189,106,.22); border-radius:2px; pointer-events:none;
   }
   .portrait img{display:block; width:100%; border-radius:2px; filter:saturate(1.02) contrast(1.02) brightness(.97)}
   .nameplate{
@@ -168,7 +188,7 @@
     background:linear-gradient(170deg,rgba(255,255,255,.018),transparent);
     transition:transform .5s cubic-bezier(.2,.7,.2,1), border-color .5s, background .5s;
   }
-  .card:hover{transform:translateY(-5px); border-color:rgba(227,173,101,.25); background:linear-gradient(170deg,rgba(227,173,101,.05),transparent)}
+  .card:hover{transform:translateY(-5px); border-color:rgba(230,189,106,.28); background:linear-gradient(170deg,rgba(230,189,106,.06),transparent)}
   .card .n{font-family:var(--serif); color:var(--brass); font-size:1.6rem; font-style:italic}
   .card h3{font-size:1.18rem; margin:.7rem 0 .55rem; color:var(--cream)}
   .card p{font-size:.95rem; color:var(--dim); margin:0}
@@ -176,8 +196,8 @@
   /* Kolkata skyline band */
   .city{position:relative; padding-bottom:0}
   .skyline{
-    width:100vw; position:relative; left:50%; transform:translateX(-50%);
-    margin-top:3.5rem; line-height:0;
+    width:100vw; max-width:100vw; margin-left:calc(50% - 50vw); margin-right:calc(50% - 50vw);
+    margin-top:3.5rem; line-height:0; position:relative;
   }
   .skyline img{
     width:100%; opacity:.72; mix-blend-mode:screen;
@@ -193,6 +213,32 @@
   .relic .glyph{font-family:var(--serif); font-style:italic; color:var(--brass); font-size:1.05rem; letter-spacing:.04em}
   .relic h3{font-size:1.35rem; margin:.6rem 0 .6rem; color:var(--cream)}
   .relic p{font-size:.97rem; color:var(--dim)}
+
+  /* the journey — a left-rail timeline */
+  .timeline{position:relative; list-style:none; margin:3rem 0 0; padding-left:38px}
+  .timeline::before{
+    content:""; position:absolute; left:12px; top:6px; bottom:6px; width:1.5px;
+    background:linear-gradient(180deg,transparent, var(--brass-deep) 7%, var(--brass-deep) 93%, transparent);
+    opacity:.5;
+  }
+  .tl{position:relative; padding-bottom:2.7rem}
+  .tl:last-child{padding-bottom:.3rem}
+  .tl::before{
+    content:""; position:absolute; left:-31px; top:7px; width:13px; height:13px; border-radius:50%;
+    background:radial-gradient(circle at 35% 32%, var(--brass), var(--brass-deep));
+    box-shadow:0 0 0 4px var(--ink), 0 0 16px 2px rgba(230,189,106,.45);
+  }
+  .tl-year{font-family:var(--serif); font-style:italic; color:var(--brass); font-size:1.15rem; letter-spacing:.02em}
+  .tl h3{font-size:1.32rem; margin:.25rem 0 .5rem; color:var(--cream); font-weight:400}
+  .tl p{font-size:.97rem; color:var(--dim); margin:0; max-width:54ch}
+  /* the falls — garnet scar-nodes (Mars, the soul's fire) */
+  .tl.scar::before{
+    background:radial-gradient(circle at 35% 32%, var(--terra), #7d2230);
+    box-shadow:0 0 0 4px var(--ink), 0 0 16px 2px rgba(191,74,90,.5);
+  }
+  .tl.scar .tl-year{color:var(--terra)}
+  /* the coda — a hollow node, the present, still open */
+  .tl.now::before{background:transparent; border:1.5px solid var(--brass); box-shadow:0 0 0 4px var(--ink), 0 0 16px 2px rgba(230,189,106,.4)}
 
   /* guestbook / reach */
   .reach{text-align:center}
@@ -225,6 +271,7 @@
 
 <body>
   <div class="lamp" id="lamp"></div>
+  <div class="sky"></div>
   <div class="vignette"></div>
   <div class="grain"></div>
 
@@ -309,6 +356,98 @@
           it did on Monday. The romance is in getting the boring things right.</p>
         </div>
       </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- THE JOURNEY -->
+    <section class="journey">
+      <p class="kicker reveal">The long way here</p>
+      <h2 class="reveal" data-d="1">My journey, in chapters.</h2>
+      <p class="lead reveal" data-d="2">
+        No straight lines &mdash; just a slow climb, and a lot of people who believed in me
+        before there was much to believe in. A few markers on the road:
+      </p>
+
+      <ol class="timeline">
+        <li class="tl reveal">
+          <span class="tl-year">1995</span>
+          <h3>Born to Kiran &amp; Om Prakash Kanoi</h3>
+          <p>The 1st of March, in Kolkata &mdash; to my mother Kiran, from the hills of
+          Siliguri, and my father Om Prakash, from the land of Rajasthan. The desert
+          and the foothills, meeting in the City of Joy. Everything I am starts with them.</p>
+        </li>
+        <li class="tl reveal scar">
+          <span class="tl-year">2008</span>
+          <h3>I flunked class 9</h3>
+          <p>The &ldquo;good student&rdquo; failed &mdash; my very first taste of falling short.
+          And, strangely, the most rewarding failure of my life. It taught me young that
+          the floor is survivable, and that&rsquo;s a thing worth knowing early.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2012</span>
+          <h3>St. Xavier&rsquo;s College, Kolkata</h3>
+          <p>Got in &mdash; and promptly into one of those gloriously pseudo-cool commerce
+          societies. I spent these years quietly figuring out who I wanted to become.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2014</span>
+          <h3>Make A Difference</h3>
+          <p>Began volunteering as an ed-support volunteer &mdash; showing up for children
+          who needed someone to. The first time my hours felt like they belonged to
+          something bigger than me.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2015</span>
+          <h3>Leading the Kolkata chapter</h3>
+          <p>Trusted to lead MAD&rsquo;s entire Kolkata chapter. Being handed responsibility
+          for other people&rsquo;s effort &mdash; and their belief &mdash; rearranged how I saw myself.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2015</span>
+          <h3>I met Varun</h3>
+          <p>Met my co-founder, Varun Bhaia, at Startup Weekend (by Google) at IIM
+          Calcutta. Some handshakes you can trace an entire life back to. This was one.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2016</span>
+          <h3>Urban Rasoi begins</h3>
+          <p>Started Urban Rasoi as a home-chef aggregator &mdash; which slowly, stubbornly
+          grew into a B2B corporate catering company. The kitchens were born.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2020</span>
+          <h3>First summit &mdash; Kedarkantha</h3>
+          <p>My first trek to a summit. The mountains taught me what the city couldn&rsquo;t:
+          that you get to the top in small, stubborn steps, and not one other way.</p>
+        </li>
+        <li class="tl reveal scar">
+          <span class="tl-year">2020</span>
+          <h3>The second great setback</h3>
+          <p>Then COVID. Ninety percent of our revenue, gone almost overnight &mdash; and the
+          two years after took the savings too. I found out exactly what I was made of
+          by losing nearly all of it. Scorpio learns by burning down and growing back.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2024</span>
+          <h3>Rebuilt, from the ground up</h3>
+          <p>Brought Urban Rasoi back &mdash; this time as a house-party catering company &mdash;
+          and clawed our way to half of what we once were. Starting over, on purpose,
+          is its own quiet kind of courage.</p>
+        </li>
+        <li class="tl reveal">
+          <span class="tl-year">2026</span>
+          <h3>All the way back &mdash; and expanding again</h3>
+          <p>Back to pre-COVID revenues, and stepping into the B2B vertical once more.
+          Not the same company. Not the same man. Better, I think &mdash; tempered.</p>
+        </li>
+        <li class="tl reveal now">
+          <span class="tl-year">Now</span>
+          <h3>This room</h3>
+          <p>Still feeding people, still a boy from Kolkata. And keeping this quiet
+          corner of the internet to remember every fall it took to get here.</p>
+        </li>
+      </ol>
     </section>
 
     <div class="divider"></div>

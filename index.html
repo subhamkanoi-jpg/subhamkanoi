@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Subham Kanoi — The Room</title>
+<meta name="description" content="A quiet room kept by Subham Kanoi — Kolkata boy, feeder of people, founder of UR Hospitality. Come in, leave your shoes at the door." />
+<meta name="author" content="Subham Kanoi" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Subham Kanoi — The Room" />
+<meta property="og:description" content="Kolkata boy. I feed people for a living. This is the room where I keep why." />
+<meta property="og:image" content="assets/img/og.jpg" />
+<meta name="theme-color" content="#15110e" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --ink:#15110e;
+    --ink-2:#1d1713;
+    --ink-3:#241c16;
+    --cream:#f4ead9;
+    --cream-2:#e6d8c2;
+    --dim:#b4a288;
+    --faint:#8a7a64;
+    --brass:#e3ad65;
+    --brass-deep:#b9823f;
+    --terra:#bd6442;
+    --line:rgba(244,234,217,0.10);
+    --line-2:rgba(244,234,217,0.06);
+    --serif:"Fraunces", Georgia, "Times New Roman", serif;
+    --sans:"Instrument Sans", system-ui, -apple-system, sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+
+  body{
+    background:var(--ink);
+    color:var(--cream);
+    font-family:var(--sans);
+    font-size:clamp(16px,1.05vw + 12px,19px);
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  /* ---- candlelit atmosphere ---- */
+  .lamp{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(60vw 60vw at var(--mx,30%) var(--my,12%),
+        rgba(227,173,101,0.16), rgba(227,173,101,0.05) 32%, transparent 60%),
+      radial-gradient(80vw 70vw at 85% 110%,
+        rgba(189,100,66,0.10), transparent 55%);
+    transition:background .6s ease;
+  }
+  .vignette{
+    position:fixed; inset:0; z-index:1; pointer-events:none;
+    box-shadow:inset 0 0 22vw 6vw rgba(0,0,0,0.55);
+    background:radial-gradient(120vw 100vh at 50% 40%, transparent 55%, rgba(0,0,0,.45));
+  }
+  .grain{
+    position:fixed; inset:-50%; z-index:2; pointer-events:none; opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:grain 7s steps(6) infinite;
+  }
+  @keyframes grain{
+    0%,100%{transform:translate(0,0)} 20%{transform:translate(-4%,3%)}
+    40%{transform:translate(3%,-5%)} 60%{transform:translate(-2%,4%)} 80%{transform:translate(4%,2%)}
+  }
+  @media (prefers-reduced-motion: reduce){.grain{animation:none}}
+
+  .wrap{position:relative; z-index:3}
+
+  /* ---- monogram + frame ---- */
+  .corner{
+    position:fixed; top:clamp(18px,3vw,34px); z-index:20;
+    font-family:var(--serif); letter-spacing:.04em;
+    font-size:14px; color:var(--dim); mix-blend-mode:screen;
+  }
+  .corner.l{left:clamp(18px,3vw,40px)}
+  .corner.r{right:clamp(18px,3vw,40px); text-align:right; font-style:italic}
+  .corner a{color:inherit; text-decoration:none; border-bottom:1px solid transparent; transition:.3s}
+  .corner a:hover{color:var(--brass); border-color:var(--brass-deep)}
+
+  section{
+    max-width:1080px; margin:0 auto;
+    padding:clamp(80px,13vh,150px) clamp(22px,6vw,64px);
+  }
+
+  .kicker{
+    font-size:.72rem; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--brass); font-weight:600; margin-bottom:1.6rem;
+    display:flex; align-items:center; gap:.85rem;
+  }
+  .kicker::before{content:""; width:34px; height:1px; background:var(--brass-deep); opacity:.7}
+
+  h1,h2,h3{font-family:var(--serif); font-weight:400; line-height:1.04; letter-spacing:-.012em}
+  p{max-width:60ch}
+  em{font-style:italic; color:var(--cream-2)}
+  .lead{color:var(--cream-2)}
+  .muted{color:var(--dim)}
+
+  /* ---- doorway / hero ---- */
+  .door{
+    min-height:100svh; display:grid; align-content:center;
+    grid-template-columns:1.15fr .85fr; gap:clamp(30px,5vw,70px);
+    max-width:1180px; padding-top:clamp(90px,14vh,140px);
+  }
+  @media(max-width:880px){.door{grid-template-columns:1fr; min-height:auto; padding-top:120px}}
+
+  .door h1{
+    font-size:clamp(3.1rem,9vw,6.4rem);
+    margin:.2em 0 .35em; letter-spacing:-.02em;
+  }
+  .door h1 span{display:block; font-style:italic; color:var(--brass); font-size:.42em; letter-spacing:0; margin-top:.5em}
+  .door .open-line{font-size:clamp(1.05rem,1.4vw,1.3rem); max-width:34ch; color:var(--cream-2)}
+  .door .open-line .b{color:var(--brass)}
+
+  /* framed portrait */
+  .portrait{
+    position:relative; align-self:center;
+    padding:14px; border:1px solid var(--line);
+    background:linear-gradient(155deg,#2a211a,#1a1410);
+    border-radius:3px;
+    box-shadow:0 40px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(227,173,101,.08);
+    transform:rotate(-1.1deg);
+  }
+  .portrait::before{
+    content:""; position:absolute; inset:5px; border:1px solid rgba(227,173,101,.18); border-radius:2px; pointer-events:none;
+  }
+  .portrait img{display:block; width:100%; border-radius:2px; filter:saturate(1.02) contrast(1.02) brightness(.97)}
+  .nameplate{
+    position:absolute; left:50%; bottom:-18px; transform:translateX(-50%);
+    background:linear-gradient(180deg,#e8c488,#b9823f);
+    color:#2a1c0c; font-family:var(--serif); font-style:italic;
+    font-size:.82rem; padding:5px 18px; border-radius:2px; white-space:nowrap;
+    box-shadow:0 8px 20px -8px rgba(0,0,0,.7);
+  }
+
+  .scrollcue{margin-top:3.2rem; display:flex; align-items:center; gap:.8rem; color:var(--faint); font-size:.78rem; letter-spacing:.22em; text-transform:uppercase}
+  .scrollcue .dot{width:7px;height:7px;border-radius:50%;background:var(--brass);animation:sink 2.2s ease-in-out infinite}
+  @keyframes sink{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(6px);opacity:1}}
+
+  /* ---- generic blocks ---- */
+  h2{font-size:clamp(2rem,5vw,3.4rem); margin-bottom:1.1rem}
+  .stack > * + *{margin-top:1.3rem}
+  .pull{
+    font-family:var(--serif); font-size:clamp(1.5rem,3.4vw,2.4rem);
+    line-height:1.3; color:var(--cream); max-width:24ch; font-style:italic;
+  }
+  .pull .hl{color:var(--brass); font-style:normal}
+
+  .divider{height:1px; background:var(--line); max-width:1080px; margin:0 auto}
+
+  /* the kitchen / what I build */
+  .build-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(18px,3vw,34px); margin-top:2.6rem}
+  @media(max-width:760px){.build-grid{grid-template-columns:1fr}}
+  .card{
+    border:1px solid var(--line); border-radius:4px; padding:clamp(22px,3vw,30px);
+    background:linear-gradient(170deg,rgba(255,255,255,.018),transparent);
+    transition:transform .5s cubic-bezier(.2,.7,.2,1), border-color .5s, background .5s;
+  }
+  .card:hover{transform:translateY(-5px); border-color:rgba(227,173,101,.25); background:linear-gradient(170deg,rgba(227,173,101,.05),transparent)}
+  .card .n{font-family:var(--serif); color:var(--brass); font-size:1.6rem; font-style:italic}
+  .card h3{font-size:1.18rem; margin:.7rem 0 .55rem; color:var(--cream)}
+  .card p{font-size:.95rem; color:var(--dim); margin:0}
+
+  /* Kolkata skyline band */
+  .city{position:relative; padding-bottom:0}
+  .skyline{
+    width:100vw; position:relative; left:50%; transform:translateX(-50%);
+    margin-top:3.5rem; line-height:0;
+  }
+  .skyline img{width:100%; opacity:.8; mix-blend-mode:screen; filter:sepia(.4) saturate(1.3) brightness(1.05) hue-rotate(-12deg)}
+  .skyline::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 40%,var(--ink)); pointer-events:none}
+
+  /* the shelf — values */
+  .shelf{display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(20px,3vw,40px); margin-top:2.8rem}
+  @media(max-width:760px){.shelf{grid-template-columns:1fr}}
+  .relic{padding-top:1.6rem; border-top:1px solid var(--line)}
+  .relic .glyph{font-family:var(--serif); font-style:italic; color:var(--brass); font-size:1.05rem; letter-spacing:.04em}
+  .relic h3{font-size:1.35rem; margin:.6rem 0 .6rem; color:var(--cream)}
+  .relic p{font-size:.97rem; color:var(--dim)}
+
+  /* guestbook / reach */
+  .reach{text-align:center}
+  .reach h2{margin-bottom:.6rem}
+  .links{display:flex; flex-wrap:wrap; justify-content:center; gap:14px; margin-top:2.6rem}
+  .links a{
+    font-family:var(--sans); font-size:.95rem; color:var(--cream);
+    text-decoration:none; padding:13px 24px; border:1px solid var(--line);
+    border-radius:100px; transition:.4s; letter-spacing:.01em; background:rgba(255,255,255,.01);
+  }
+  .links a:hover{border-color:var(--brass); color:var(--ink); background:var(--brass); transform:translateY(-3px)}
+  .links a.primary{border-color:var(--brass-deep); color:var(--brass)}
+  .links a.primary:hover{background:var(--brass); color:var(--ink)}
+
+  footer{
+    text-align:center; padding:clamp(50px,8vh,90px) 24px clamp(40px,6vh,70px);
+    color:var(--faint); font-size:.82rem; letter-spacing:.02em;
+  }
+  footer .sig{font-family:var(--serif); font-style:italic; font-size:1.25rem; color:var(--dim); margin-bottom:.6rem; letter-spacing:.01em}
+  footer .diya{color:var(--brass); animation:flicker 3.5s ease-in-out infinite}
+  @keyframes flicker{0%,100%{opacity:1}45%{opacity:.65}50%{opacity:.9}55%{opacity:.6}}
+
+  /* reveal */
+  .reveal{opacity:0; transform:translateY(26px); transition:opacity 1s cubic-bezier(.2,.7,.2,1), transform 1s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1; transform:none}
+  [data-d="1"]{transition-delay:.1s}[data-d="2"]{transition-delay:.2s}[data-d="3"]{transition-delay:.3s}
+  @media (prefers-reduced-motion: reduce){.reveal{opacity:1; transform:none}.portrait{transform:none}}
+</style>
+</head>
+
+<body>
+  <div class="lamp" id="lamp"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+
+  <span class="corner l">SK</span>
+  <span class="corner r"><a href="#guestbook">say hello &rsaquo;</a></span>
+
+  <div class="wrap">
+
+    <!-- DOORWAY -->
+    <section class="door">
+      <div>
+        <p class="kicker reveal">Welcome in &middot; leave your shoes at the door</p>
+        <h1 class="reveal" data-d="1">Subham&nbsp;Kanoi
+          <span>this is not a portfolio. it&rsquo;s a room.</span>
+        </h1>
+        <p class="open-line reveal" data-d="2">
+          A Kolkata boy who <span class="b">feeds people for a living.</span>
+          Pull up a chair. I keep my pride, my roots and the things that move me
+          on these walls.
+        </p>
+        <div class="scrollcue reveal" data-d="3"><span class="dot"></span> step inside</div>
+      </div>
+
+      <figure class="portrait reveal" data-d="2">
+        <img src="assets/img/subham.jpg" alt="Subham Kanoi standing in one of his cafés in Kolkata" />
+        <figcaption class="nameplate">Subham, in a room he built</figcaption>
+      </figure>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- WHO -->
+    <section class="stack">
+      <p class="kicker reveal">The man in the photo</p>
+      <h2 class="reveal" data-d="1">I&rsquo;m Subham.</h2>
+      <p class="lead reveal" data-d="1">
+        Born in Kolkata in the spring of 1995 &mdash; a city of trams, monsoon and
+        long lunches. I grew up in a house where guests were never strangers and
+        an empty plate was a small failure. That stayed with me.
+      </p>
+      <p class="reveal" data-d="2">
+        I didn&rsquo;t set out to be remarkable. I set out to be <em>useful</em> &mdash;
+        to take care of people in the most ordinary, daily way there is: by feeding
+        them well, on time, with a little dignity. Everything I&rsquo;ve built grows
+        out of that one stubborn idea.
+      </p>
+      <p class="pull reveal" data-d="1">
+        &ldquo;Hospitality is just <span class="hl">love</span>, made practical.&rdquo;
+      </p>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- WHAT I BUILD -->
+    <section>
+      <p class="kicker reveal">What I do with my hands</p>
+      <h2 class="reveal" data-d="1">I run the kitchens<br/>that feed people far from home.</h2>
+      <p class="lead reveal" data-d="2">
+        Through <strong>UR&nbsp;Hospitality</strong> &mdash; <em>Urban&nbsp;Rasoi</em> &mdash; I build and run
+        corporate cafeterias: the warm, unglamorous engine rooms where a workday
+        gets its breakfast, its lunch, its 4&nbsp;o&rsquo;clock chai. It is honest work,
+        and I am quietly proud of it.
+      </p>
+
+      <div class="build-grid">
+        <div class="card reveal" data-d="1">
+          <div class="n">i.</div>
+          <h3>A hot meal, every weekday</h3>
+          <p>Menus planned, food safe, served on time &mdash; for people who are
+          somewhere they&rsquo;d rather be home from. That reliability is the whole job.</p>
+        </div>
+        <div class="card reveal" data-d="2">
+          <div class="n">ii.</div>
+          <h3>A kitchen run with care</h3>
+          <p>Behind every counter is a team. I&rsquo;d rather be known as someone who
+          looked after his people than someone who simply scaled.</p>
+        </div>
+        <div class="card reveal" data-d="3">
+          <div class="n">iii.</div>
+          <h3>The unglamorous craft</h3>
+          <p>Logistics, hygiene, costing, the same dal tasting right on a Tuesday as
+          it did on Monday. The romance is in getting the boring things right.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- WHERE I'M FROM -->
+    <section class="city">
+      <p class="kicker reveal">Where the roots are</p>
+      <h2 class="reveal" data-d="1">Kolkata made me.</h2>
+      <p class="lead reveal" data-d="2">
+        The Howrah Bridge at dusk. A tram&rsquo;s slow bell. The Victoria Memorial
+        going gold in the evening. This city taught me that warmth and grit are the
+        same thing &mdash; that you can be soft with people and still get the work done.
+        Whatever I become, I&rsquo;ll have been a boy from here first.
+      </p>
+      <div class="skyline reveal" data-d="1">
+        <img src="assets/img/kolkata-skyline.jpg" alt="Hand-drawn skyline of Kolkata — Howrah Bridge, Victoria Memorial and a tram" />
+      </div>
+    </section>
+
+    <!-- THE SHELF -->
+    <section>
+      <p class="kicker reveal">On the shelf</p>
+      <h2 class="reveal" data-d="1">Three things I keep close.</h2>
+      <div class="shelf">
+        <div class="relic reveal" data-d="1">
+          <div class="glyph">&mdash; i &mdash;</div>
+          <h3>Pride</h3>
+          <p>Not the loud kind. The quiet satisfaction of a thing built well and
+          a promise kept &mdash; the lights on, the food out, the people fed.</p>
+        </div>
+        <div class="relic reveal" data-d="2">
+          <div class="glyph">&mdash; ii &mdash;</div>
+          <h3>Humility</h3>
+          <p>I remember every version of myself who didn&rsquo;t have this yet. Staying
+          grateful is not a virtue I perform; it&rsquo;s just memory, kept honest.</p>
+        </div>
+        <div class="relic reveal" data-d="3">
+          <div class="glyph">&mdash; iii &mdash;</div>
+          <h3>Faith</h3>
+          <p>I read the sky a little &mdash; the old Indian way of marking time and
+          temperament. It keeps me patient, and it keeps me small under something larger.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- GUESTBOOK -->
+    <section class="reach" id="guestbook">
+      <p class="kicker reveal" style="justify-content:center">Before you go</p>
+      <h2 class="reveal" data-d="1">Don&rsquo;t leave without saying hello.</h2>
+      <p class="lead reveal" data-d="2" style="margin:0 auto">
+        If something here moved you, or you just want to talk food, work, or Kolkata &mdash;
+        the door stays open.
+      </p>
+      <div class="links reveal" data-d="2">
+        <a class="primary" href="https://calendly.com/subham-kanoi/30min" target="_blank" rel="noopener">Sit with me &mdash; 30 min &rsaquo;</a>
+        <a href="https://www.instagram.com/kanoisubham/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.linkedin.com/in/subham-kanoi-48526642/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="sig">&mdash; Subham</div>
+      <div>Kept quietly in Kolkata <span class="diya">&#10047;</span> est. 1995</div>
+    </footer>
+
+  </div>
+
+<script>
+  // gentle scroll reveal
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.16, rootMargin:"0px 0px -8% 0px"});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // lamp follows the cursor, softly
+  const lamp = document.getElementById('lamp');
+  let tx=30, ty=12, cx=30, cy=12, raf;
+  const motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(motionOK){
+    addEventListener('pointermove', e=>{
+      tx = (e.clientX/innerWidth)*100;
+      ty = (e.clientY/innerHeight)*100;
+      if(!raf) raf = requestAnimationFrame(loop);
+    }, {passive:true});
+  }
+  function loop(){
+    cx += (tx-cx)*.06; cy += (ty-cy)*.06;
+    lamp.style.setProperty('--mx', cx.toFixed(2)+'%');
+    lamp.style.setProperty('--my', cy.toFixed(2)+'%');
+    if(Math.abs(tx-cx)>.1 || Math.abs(ty-cy)>.1){ raf=requestAnimationFrame(loop); } else { raf=null; }
+  }
+</script>
+</body>
+</html>

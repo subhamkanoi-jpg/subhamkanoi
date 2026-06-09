@@ -233,17 +233,53 @@
   .ml-title{font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.1em; color:var(--brass); font-size:.98rem; margin:.7rem 0 .9rem}
   .ml-desc{font-family:var(--mono); font-weight:300; font-size:.95rem; color:var(--cream-2); line-height:1.7; margin:0; max-width:50ch}
   @media(max-width:680px){.ml-desc{margin:0 auto}}
-  .ml-strip{list-style:none; display:flex; gap:.2rem; margin:1.5rem 0 0; padding:1.1rem 2px .4rem; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--brass-deep) transparent}
+  /* strip header — makes the timeline read as interactive */
+  .ml-striphead{
+    display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;
+    margin-top:2.1rem; padding-bottom:.2rem;
+    font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--dim); border-bottom:1px solid var(--line-2);
+  }
+  .ml-striphead .sh-l{color:var(--faint)}
+  .ml-striphead .sh-cue{display:inline-flex; align-items:center; gap:.55rem; color:var(--brass)}
+  .ml-striphead .sh-cue .dot{
+    width:7px; height:7px; border-radius:50%; background:var(--brass);
+    box-shadow:0 0 0 0 rgba(230,189,106,.55); animation:tapPulse 1.9s ease-out infinite;
+  }
+  .ml-striphead .sh-cue .chev{display:inline-block; animation:chevSlide 1.5s ease-in-out infinite}
+  @keyframes tapPulse{0%{box-shadow:0 0 0 0 rgba(230,189,106,.5)}70%{box-shadow:0 0 0 9px rgba(230,189,106,0)}100%{box-shadow:0 0 0 0 rgba(230,189,106,0)}}
+  @keyframes chevSlide{0%,100%{transform:translateX(0); opacity:.45}50%{transform:translateX(4px); opacity:1}}
+
+  .ml-strip{list-style:none; display:flex; gap:.35rem; margin:.4rem 0 0; padding:1.1rem 2px .4rem; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin; scrollbar-color:var(--brass-deep) transparent}
   .ml-strip::-webkit-scrollbar{height:5px}
   .ml-strip::-webkit-scrollbar-thumb{background:var(--brass-deep)}
   .ml-strip li{flex:0 0 auto}
-  .ml-strip button{background:none; border:0; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:.55rem; padding:.5rem .5rem; opacity:.45; transition:opacity .25s}
-  .ml-strip button:hover{opacity:.9}
-  .ml-strip button.active{opacity:1}
+  .ml-strip button{
+    background:rgba(233,233,241,.022); border:1px solid var(--line-2); border-radius:7px;
+    cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:.5rem;
+    padding:.65rem .7rem .55rem; opacity:.6;
+    transition:opacity .25s, transform .25s ease, background .25s, border-color .25s;
+  }
+  .ml-strip button:hover, .ml-strip button:focus-visible{
+    opacity:1; transform:translateY(-4px); outline:none;
+    background:rgba(230,189,106,.06); border-color:rgba(230,189,106,.32);
+  }
+  .ml-strip button.active{opacity:1; background:rgba(230,189,106,.07); border-color:rgba(230,189,106,.42)}
   .ml-strip button svg{display:block; transition:transform .25s ease}
+  .ml-strip button:hover svg{transform:scale(1.14)}
   .ml-strip button.active svg{transform:scale(1.22)}
-  .ml-strip button .yr{font-family:var(--mono); font-size:.6rem; letter-spacing:.05em; color:var(--dim)}
+  .ml-strip button .yr{font-family:var(--mono); font-size:.6rem; letter-spacing:.05em; color:var(--dim); transition:color .25s}
+  .ml-strip button:hover .yr{color:var(--cream-2)}
   .ml-strip button.active .yr{color:var(--brass)}
+  /* attention nudge on the current moon until the visitor first interacts */
+  .ml-strip.untouched button.active{animation:moonNudge 2.2s ease-in-out infinite; border-color:rgba(230,189,106,.42)}
+  @keyframes moonNudge{
+    0%,100%{transform:translateY(0); box-shadow:0 0 0 0 rgba(230,189,106,0)}
+    50%{transform:translateY(-6px); box-shadow:0 14px 22px -10px rgba(230,189,106,.4)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ml-striphead .sh-cue .dot, .ml-striphead .sh-cue .chev, .ml-strip.untouched button.active{animation:none}
+  }
   .moon-dark{fill:rgba(233,233,241,.06)}
   .moon-lit{fill:#ece5d2}
   .moon-ring{fill:none; stroke:rgba(230,189,106,.55); stroke-width:1; vector-effect:non-scaling-stroke}
@@ -473,7 +509,7 @@
     <section class="moonlog" id="lunarlog">
       <p class="label reveal">// 03 &mdash; lunar log</p>
       <h2 class="reveal" data-d="1">Phases of a journey.</h2>
-      <p class="lede reveal" data-d="2">the moon waxed and waned with my fortunes &mdash; new at every fall, full at every peak. select a phase to read the chapter.</p>
+      <p class="lede reveal" data-d="2">the moon waxed and waned with my fortunes &mdash; new at every fall, full at every peak. each moon below is a chapter &mdash; tap one to read it.</p>
       <div class="ml-console reveal" data-d="2">
         <div class="ml-stage">
           <div class="ml-moon" id="mlMoon"></div>
@@ -485,7 +521,11 @@
           <p class="ml-desc" id="mlDesc">&mdash;</p>
         </div>
       </div>
-      <ol class="ml-strip" id="mlStrip" aria-label="Journey timeline by moon phase"></ol>
+      <div class="ml-striphead reveal" data-d="2">
+        <span class="sh-l">// timeline &middot; 12 phases</span>
+        <span class="sh-cue"><span class="dot" aria-hidden="true"></span>click any moon to read it&nbsp;<span class="chev" aria-hidden="true">&rarr;</span></span>
+      </div>
+      <ol class="ml-strip untouched" id="mlStrip" aria-label="Journey timeline — select a moon phase to read that chapter"></ol>
     </section>
 
     <div class="divider"></div>
@@ -953,11 +993,13 @@
     C.forEach((c,i)=>{
       const li=document.createElement('li');
       const b=document.createElement('button');
-      b.type='button'; b.setAttribute('aria-label', c.y+' — '+c.t);
+      b.type='button'; b.setAttribute('aria-label', 'Read chapter: '+c.y+' — '+c.t);
+      b.title=c.y+' — '+c.t;
       b.innerHTML=moonSVG(c.p,30)+'<span class="yr">'+c.y+'</span>';
-      b.addEventListener('click', ()=>select(i));
-      b.addEventListener('mouseenter', ()=>select(i));
-      b.addEventListener('focus', ()=>select(i));
+      const touch=()=>strip.classList.remove('untouched'); // stop the nudge on first real interaction
+      b.addEventListener('click', ()=>{ touch(); select(i); });
+      b.addEventListener('mouseenter', ()=>{ touch(); select(i); });
+      b.addEventListener('focus', ()=>{ touch(); select(i); });
       li.appendChild(b); strip.appendChild(li);
     });
     select(C.length-1); // rest on the present — a full moon

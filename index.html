@@ -966,7 +966,9 @@
     const btn=document.getElementById('audioBtn');
     const label=document.getElementById('audioLabel');
     if(!audio||!btn) return;
+    const START=15; // skip the first 15s; loop back here too
     audio.volume=0.45;
+    audio.loop=false; // we loop manually so each pass starts at START
     function setOn(on){
       btn.classList.toggle('playing', on);
       btn.setAttribute('aria-pressed', on?'true':'false');
@@ -974,12 +976,13 @@
     }
     btn.addEventListener('click', ()=>{
       if(audio.paused){
+        if(audio.currentTime < START) audio.currentTime=START;
         audio.play().then(()=>setOn(true)).catch(()=>{ label.textContent='sound // n/a'; });
       } else {
         audio.pause(); setOn(false);
       }
     });
-    audio.addEventListener('ended', ()=>setOn(false));
+    audio.addEventListener('ended', ()=>{ audio.currentTime=START; audio.play().catch(()=>{}); });
     audio.addEventListener('pause', ()=>setOn(false));
     audio.addEventListener('play', ()=>setOn(true));
   })();

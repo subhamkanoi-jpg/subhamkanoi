@@ -119,6 +119,30 @@
     text-shadow:0 0 14px rgba(230,189,106,.28);
   }
 
+  /* ---- audio toggle (HUD) ---- */
+  .audio-btn{
+    position:fixed; left:clamp(16px,3vw,34px); bottom:clamp(16px,3vw,30px); z-index:30;
+    display:flex; align-items:center; gap:.55rem; cursor:pointer;
+    font-family:var(--mono); font-size:.64rem; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--dim); background:rgba(9,13,24,.62); border:1px solid var(--line);
+    border-radius:2px; padding:7px 12px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
+    box-shadow:0 12px 28px -20px rgba(0,0,0,.9); transition:color .25s, border-color .25s;
+  }
+  .audio-btn:hover{color:var(--brass); border-color:rgba(230,189,106,.35)}
+  .audio-btn .eq{display:flex; align-items:flex-end; gap:2px; height:12px}
+  .audio-btn .eq i{
+    width:2px; height:4px; background:currentColor; display:block;
+    transform-origin:bottom; transition:background .25s;
+  }
+  .audio-btn.playing{color:var(--brass); border-color:rgba(230,189,106,.35)}
+  .audio-btn.playing .eq i{animation:eq .9s ease-in-out infinite}
+  .audio-btn.playing .eq i:nth-child(2){animation-delay:.18s}
+  .audio-btn.playing .eq i:nth-child(3){animation-delay:.36s}
+  .audio-btn.playing .eq i:nth-child(4){animation-delay:.54s}
+  @keyframes eq{0%,100%{height:4px}50%{height:12px}}
+  @media (prefers-reduced-motion: reduce){.audio-btn.playing .eq i{animation:none; height:9px}}
+  @media (max-width:680px){.audio-btn{font-size:.6rem; padding:6px 10px}}
+
   /* ---- section nav (anchor dock) ---- */
   .dock{
     position:fixed; right:clamp(13px,2.2vw,26px); top:50%; transform:translateY(-50%);
@@ -373,6 +397,14 @@
   <div class="uptime" id="uptime" role="timer" aria-live="off" title="years months days hours minutes seconds alive on earth, since 01 Mar 1995 23:20 IST">
     <span class="ut-k">Alive</span><span class="ut-v" id="utVal">since 00Y : 0M : 0D : 00H : 00MIN : 00S</span>
   </div>
+
+  <audio id="bgm" loop preload="none">
+    <source src="assets/audio/ambient.mp3" type="audio/mpeg" />
+  </audio>
+  <button class="audio-btn" id="audioBtn" type="button" aria-pressed="false" aria-label="Play ambient sound">
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+    <span id="audioLabel">sound // off</span>
+  </button>
 
   <nav class="dock" id="dock" aria-label="Sections">
     <a href="#home"><span class="dk-l">home</span><span class="dk-n">00</span></a>
@@ -926,6 +958,30 @@
       li.appendChild(b); strip.appendChild(li);
     });
     select(C.length-1); // rest on the present — a full moon
+  })();
+
+  /* ---- ambient audio toggle ---- */
+  (function(){
+    const audio=document.getElementById('bgm');
+    const btn=document.getElementById('audioBtn');
+    const label=document.getElementById('audioLabel');
+    if(!audio||!btn) return;
+    audio.volume=0.45;
+    function setOn(on){
+      btn.classList.toggle('playing', on);
+      btn.setAttribute('aria-pressed', on?'true':'false');
+      label.textContent='sound // '+(on?'on':'off');
+    }
+    btn.addEventListener('click', ()=>{
+      if(audio.paused){
+        audio.play().then(()=>setOn(true)).catch(()=>{ label.textContent='sound // n/a'; });
+      } else {
+        audio.pause(); setOn(false);
+      }
+    });
+    audio.addEventListener('ended', ()=>setOn(false));
+    audio.addEventListener('pause', ()=>setOn(false));
+    audio.addEventListener('play', ()=>setOn(true));
   })();
 </script>
 </body>

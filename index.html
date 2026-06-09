@@ -15,6 +15,17 @@
 <link rel="icon" type="image/png" href="assets/img/favicon.png" />
 <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
 
+<script>
+  /* set theme before first paint to avoid a flash */
+  (function(){
+    try{
+      var t=localStorage.getItem('theme');
+      if(!t) t=matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+    }catch(e){ document.documentElement.setAttribute('data-theme','dark'); }
+  })();
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&display=swap" rel="stylesheet" />
@@ -34,7 +45,43 @@
     --line-2:rgba(233,233,241,0.05);
     --display:"Chakra Petch", system-ui, sans-serif;
     --mono:"JetBrains Mono", ui-monospace, monospace;
+    --panel:rgba(9,13,24,.62);   /* translucent HUD surface */
+    --panel-strong:rgba(9,13,24,.9);
+    --drop:rgba(0,0,0,.85);      /* shadow tint */
   }
+
+  /* ---- daylight theme (warm paper) ---- */
+  html[data-theme="light"]{
+    --ink:#efe9da;        /* warm paper */
+    --ink-2:#e6dec9;
+    --cream:#20202c;      /* ink text */
+    --cream-2:#41414f;
+    --dim:#6a6354;
+    --faint:#8f897a;
+    --brass:#9a6a14;      /* bronze — legible amber on paper */
+    --brass-deep:#6f4c0e;
+    --terra:#a52f3c;
+    --line:rgba(34,30,24,0.16);
+    --line-2:rgba(34,30,24,0.08);
+    --panel:rgba(255,251,242,.82);
+    --panel-strong:rgba(255,251,242,.94);
+    --drop:rgba(95,75,30,.28);
+  }
+  html{color-scheme:dark}
+  html[data-theme="light"]{color-scheme:light}
+  body, .star-tip, .sky-hint, .uptime, .audio-btn, .theme-btn,
+  .dock, .portrait::before, .family-fold, .family-kids span, .time-left, .moon-dark{
+    transition:background-color .4s ease, color .4s ease, border-color .4s ease, fill .4s ease;
+  }
+  /* soften the dark-only atmospherics in daylight */
+  html[data-theme="light"] .vignette{background:radial-gradient(120vw 100vh at 50% 40%, transparent 60%, rgba(120,98,40,.10))}
+  html[data-theme="light"] .lamp{
+    background:
+      radial-gradient(70vw 60vw at 12% 4%, rgba(120,134,210,0.10), transparent 55%),
+      radial-gradient(80vw 72vw at 88% 114%, rgba(210,150,70,0.12), transparent 56%);
+  }
+  html[data-theme="light"] .grain{opacity:.018}
+  html[data-theme="light"] .moon-dark{fill:rgba(34,30,24,.16)}
 
   *{box-sizing:border-box; margin:0; padding:0}
   html{scroll-behavior:smooth; overflow-x:hidden}
@@ -57,7 +104,7 @@
   .skycanvas{position:fixed; inset:0; z-index:1; pointer-events:none; display:block}
   .star-tip{
     position:fixed; z-index:7; pointer-events:none; transform:translate(-50%,-128%);
-    background:rgba(9,13,24,.9); border:1px solid rgba(230,189,106,.35);
+    background:var(--panel-strong); border:1px solid rgba(230,189,106,.35);
     border-radius:4px; padding:9px 13px; width:max-content; max-width:min(250px, calc(100vw - 30px));
     -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
     box-shadow:0 14px 34px -14px rgba(0,0,0,.85);
@@ -73,7 +120,7 @@
   .sky-hint{
     position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:6;
     font-family:var(--mono); font-size:.64rem; letter-spacing:.18em; text-transform:uppercase; color:var(--dim);
-    background:rgba(9,13,24,.55); border:1px solid var(--line); border-radius:2px;
+    background:var(--panel); border:1px solid var(--line); border-radius:2px;
     padding:7px 15px; -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
     transition:opacity 1.1s ease; pointer-events:none;
   }
@@ -102,7 +149,7 @@
     color:var(--dim); mix-blend-mode:screen;
   }
   .corner.l{left:clamp(16px,3vw,34px)}
-  .corner.r{right:clamp(16px,3vw,34px); text-align:right}
+  .corner.r{right:clamp(16px,3vw,34px); text-align:right; top:clamp(54px,7vw,66px)}
   a.corner.l{text-decoration:none; cursor:pointer; transition:color .25s}
   a.corner.l::before{content:"\2191 "; opacity:.6}
   a.corner.l:hover{color:var(--brass)}
@@ -111,7 +158,7 @@
     position:fixed; top:clamp(14px,2.2vw,24px); left:50%; transform:translateX(-50%);
     z-index:25; display:flex; align-items:baseline; gap:.7rem;
     font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--dim); background:rgba(9,13,24,.62); border:1px solid var(--line);
+    color:var(--dim); background:var(--panel); border:1px solid var(--line);
     border-radius:2px; padding:7px 13px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
     box-shadow:0 12px 28px -20px rgba(0,0,0,.9);
   }
@@ -122,16 +169,26 @@
     text-shadow:0 0 14px rgba(230,189,106,.28);
   }
 
-  /* ---- audio toggle (HUD) ---- */
-  .audio-btn{
+  /* ---- HUD control cluster (audio + theme) ---- */
+  .hud-controls{
     position:fixed; left:clamp(16px,3vw,34px); bottom:clamp(16px,3vw,30px); z-index:30;
+    display:flex; flex-direction:column; align-items:flex-start; gap:.45rem;
+  }
+  .audio-btn, .theme-btn{
     display:flex; align-items:center; gap:.55rem; cursor:pointer;
     font-family:var(--mono); font-size:.64rem; letter-spacing:.16em; text-transform:uppercase;
-    color:var(--dim); background:rgba(9,13,24,.62); border:1px solid var(--line);
+    color:var(--dim); background:var(--panel); border:1px solid var(--line);
     border-radius:2px; padding:7px 12px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
-    box-shadow:0 12px 28px -20px rgba(0,0,0,.9); transition:color .25s, border-color .25s;
+    box-shadow:0 12px 28px -20px var(--drop); transition:color .25s, border-color .25s, background-color .4s ease;
   }
-  .audio-btn:hover{color:var(--brass); border-color:rgba(230,189,106,.35)}
+  .theme-btn{position:fixed; top:clamp(13px,2.2vw,20px); right:clamp(16px,3vw,34px); z-index:31; font-family:var(--mono)}
+  .theme-btn .ico{font-size:.86rem; line-height:1}
+  @media (max-width:680px){
+    .theme-btn{top:calc(env(safe-area-inset-top,0px) + 10px); padding:7px 9px}
+    .theme-btn #themeLabel{display:none}   /* icon-only on small screens */
+    .corner.r{display:none}                /* free the top-right for the toggle */
+  }
+  .audio-btn:hover, .theme-btn:hover{color:var(--brass); border-color:rgba(230,189,106,.35)}
   .audio-btn .eq{display:flex; align-items:flex-end; gap:2px; height:12px}
   .audio-btn .eq i{
     width:2px; height:4px; background:currentColor; display:block;
@@ -144,7 +201,7 @@
   .audio-btn.playing .eq i:nth-child(4){animation-delay:.54s}
   @keyframes eq{0%,100%{height:4px}50%{height:12px}}
   @media (prefers-reduced-motion: reduce){.audio-btn.playing .eq i{animation:none; height:9px}}
-  @media (max-width:680px){.audio-btn{font-size:.6rem; padding:6px 10px}}
+  @media (max-width:680px){.audio-btn, .theme-btn{font-size:.6rem; padding:6px 10px}}
 
   /* ---- section nav (anchor dock) ---- */
   .dock{
@@ -166,7 +223,7 @@
   @media (max-width:680px){
     .dock{
       right:auto; left:50%; top:auto; bottom:calc(9px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%);
-      flex-direction:row; gap:.05rem; background:rgba(9,13,24,.8); border:1px solid var(--line);
+      flex-direction:row; gap:.05rem; background:var(--panel-strong); border:1px solid var(--line);
       border-radius:100px; padding:4px 7px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
       max-width:calc(100vw - 24px);
     }
@@ -208,7 +265,7 @@
   @keyframes sink{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(6px);opacity:1}}
 
   .portrait{position:relative; align-self:center; border:1px solid var(--line); padding:7px}
-  .portrait::before{content:"FIG.01"; position:absolute; top:13px; left:13px; z-index:2; font-family:var(--mono); font-size:.6rem; letter-spacing:.18em; color:var(--brass); background:rgba(9,13,24,.7); padding:2px 6px}
+  .portrait::before{content:"FIG.01"; position:absolute; top:13px; left:13px; z-index:2; font-family:var(--mono); font-size:.6rem; letter-spacing:.18em; color:var(--brass); background:var(--panel); padding:2px 6px}
   .portrait img{display:block; width:100%; filter:grayscale(.45) contrast(1.06) brightness(.96)}
   .portrait figcaption{font-family:var(--mono); font-size:.64rem; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); margin-top:.7rem; padding:0 2px}
 
@@ -300,7 +357,7 @@
   }
   .family-fold{
     position:relative; margin-top:1.2rem; border:1px solid var(--line);
-    background:rgba(9,13,24,.32); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+    background:var(--panel); -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
   }
   .family-fold .family-fold{margin:1.2rem 1rem 1rem}
   .family-fold summary{
@@ -347,7 +404,7 @@
   .family-kids{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.85rem}
   .family-kids span{
     border:1px solid var(--line); color:var(--cream-2); padding:.3rem .52rem; font-family:var(--mono);
-    font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; background:rgba(9,13,24,.42);
+    font-size:.64rem; letter-spacing:.1em; text-transform:uppercase; background:var(--panel);
   }
   .family-node.self .family-tag{color:var(--terra)}
   .family-node.self .family-name{color:var(--brass); text-shadow:0 0 16px rgba(230,189,106,.22)}
@@ -368,7 +425,7 @@
   .time-left{
     display:inline-flex; align-items:baseline; justify-content:center; gap:.7rem; flex-wrap:wrap;
     max-width:calc(100vw - 40px); margin:0 auto 1.4rem; padding:9px 14px;
-    border:1px solid rgba(230,189,106,.22); background:rgba(9,13,24,.54);
+    border:1px solid rgba(230,189,106,.22); background:var(--panel);
     border-radius:2px; -webkit-backdrop-filter:blur(7px); backdrop-filter:blur(7px);
     box-shadow:0 14px 32px -24px rgba(230,189,106,.55);
   }
@@ -440,10 +497,17 @@
   <audio id="bgm" loop preload="none">
     <source src="assets/audio/ambient.mp3" type="audio/mpeg" />
   </audio>
-  <button class="audio-btn" id="audioBtn" type="button" aria-pressed="false" aria-label="Play ambient sound">
-    <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
-    <span id="audioLabel">sound // off</span>
+  <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch colour theme">
+    <span class="ico" id="themeIco" aria-hidden="true">&#9789;</span>
+    <span id="themeLabel">mode // dark</span>
   </button>
+
+  <div class="hud-controls">
+    <button class="audio-btn" id="audioBtn" type="button" aria-pressed="false" aria-label="Play ambient sound">
+      <span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+      <span id="audioLabel">sound // off</span>
+    </button>
+  </div>
 
   <nav class="dock" id="dock" aria-label="Sections">
     <a href="#home"><span class="dk-l">home</span><span class="dk-n">00</span></a>
@@ -816,8 +880,10 @@
         const px = s.x + ox*.012*s.z, py = s.y + oy*.012*s.z;
         s._px=px; s._py=py;
         ctx.beginPath(); ctx.arc(px,py,s.r*tw,0,6.283);
+        const lightTheme = document.documentElement.getAttribute('data-theme')==='light';
+        const plain = lightTheme ? '60,52,36' : '233,233,241';
         ctx.fillStyle = s.gold ? 'rgba(230,189,106,'+(s.a*tw).toFixed(3)+')'
-                               : 'rgba(233,233,241,'+(s.a*tw).toFixed(3)+')';
+                               : 'rgba('+plain+','+(s.a*tw).toFixed(3)+')';
         ctx.fill();
       }
 
@@ -1003,6 +1069,31 @@
       li.appendChild(b); strip.appendChild(li);
     });
     select(C.length-1); // rest on the present — a full moon
+  })();
+
+  /* ---- colour theme toggle (dark / light) ---- */
+  (function(){
+    const root=document.documentElement;
+    const btn=document.getElementById('themeBtn');
+    const label=document.getElementById('themeLabel');
+    const ico=document.getElementById('themeIco');
+    const meta=document.querySelector('meta[name="theme-color"]');
+    if(!btn) return;
+    const COLORS={dark:'#090d18', light:'#efe9da'};
+    function paint(theme){
+      root.setAttribute('data-theme', theme);
+      if(label) label.textContent='mode // '+theme;
+      if(ico) ico.innerHTML = theme==='light' ? '&#9728;' : '&#9789;'; // sun / moon
+      if(meta) meta.setAttribute('content', COLORS[theme]);
+      btn.setAttribute('aria-pressed', theme==='light'?'true':'false');
+    }
+    // sync UI with whatever the head script already applied
+    paint(root.getAttribute('data-theme')==='light' ? 'light' : 'dark');
+    btn.addEventListener('click', ()=>{
+      const next = root.getAttribute('data-theme')==='light' ? 'dark' : 'light';
+      try{ localStorage.setItem('theme', next); }catch(e){}
+      paint(next);
+    });
   })();
 
   /* ---- ambient audio toggle ---- */

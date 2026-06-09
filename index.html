@@ -258,6 +258,13 @@
   .door h1{font-size:clamp(2.7rem,10vw,6rem); letter-spacing:.005em; margin:.35em 0 .5em}
   .door .role{font-family:var(--mono); font-size:clamp(.85rem,1.4vw,1rem); color:var(--cream-2); font-weight:400; letter-spacing:.04em}
   .door .role b{color:var(--brass); font-weight:500}
+  .door .role .tw-caret{
+    display:inline-block; width:1px; height:1.05em; vertical-align:-0.14em; margin-left:3px;
+    background:var(--brass); box-shadow:0 0 6px rgba(230,189,106,.6);
+    animation:twBlink 1.05s steps(1) infinite;
+  }
+  @keyframes twBlink{50%{opacity:0}}
+  @media (prefers-reduced-motion: reduce){.door .role .tw-caret{display:none}}
   .hud{display:flex; flex-wrap:wrap; gap:.9rem 1.8rem; margin-top:2.1rem; font-family:var(--mono); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--dim)}
   .hud i{font-style:normal; color:var(--brass)}
   .scrollcue{margin-top:3rem; font-family:var(--mono); font-size:.68rem; letter-spacing:.24em; text-transform:uppercase; color:var(--faint); display:flex; align-items:center; gap:.7rem}
@@ -508,6 +515,23 @@
   footer .diya{color:var(--brass); animation:flicker 3.5s ease-in-out infinite}
   @keyframes flicker{0%,100%{opacity:1}45%{opacity:.6}50%{opacity:.9}55%{opacity:.55}}
 
+  /* ---- flying spaceship (cameo) ---- */
+  .spaceship{
+    position:fixed; top:0; left:0; z-index:40; width:clamp(76px,8vw,116px);
+    pointer-events:none; will-change:transform; opacity:0;
+    filter:drop-shadow(0 12px 16px rgba(0,0,0,.45));
+    /* position is driven by scroll progress in JS; transition smooths the travel */
+    transition:transform .45s cubic-bezier(.22,.61,.36,1), opacity .6s ease;
+  }
+  .spaceship .ufo-bob{display:block; animation:ufoBob 3.4s ease-in-out infinite; transform-origin:50% 50%}
+  @keyframes ufoBob{0%,100%{transform:translateY(0) rotate(-3.5deg)}50%{transform:translateY(-9px) rotate(3.5deg)}}
+  .spaceship .ufo-lights circle{animation:ufoBlink 1.8s ease-in-out infinite}
+  .spaceship .ufo-lights circle:nth-child(2){animation-delay:.3s}
+  .spaceship .ufo-lights circle:nth-child(3){animation-delay:.6s}
+  @keyframes ufoBlink{0%,100%{opacity:.45}50%{opacity:1}}
+  @media (max-width:680px){.spaceship{width:64px}}
+  @media (prefers-reduced-motion: reduce){.spaceship{display:none}}
+
   /* ---- mobile fine-tuning ---- */
   @media (max-width:680px){
     body{font-size:15px}
@@ -556,6 +580,47 @@
   <div class="sky-hint" id="skyhint">// move cursor &middot; find chart layers</div>
   <div class="vignette"></div>
   <div class="grain"></div>
+
+  <!-- flying spaceship cameo: face peeping out of the dome (favicon image) -->
+  <div class="spaceship" aria-hidden="true">
+    <svg class="ufo-bob" viewBox="0 0 160 124" width="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+      <defs>
+        <linearGradient id="ufoHull" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f3dba6"/><stop offset="1" stop-color="#8a6320"/>
+        </linearGradient>
+        <linearGradient id="ufoCap" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#fbeac1"/><stop offset="1" stop-color="#d2ab63"/>
+        </linearGradient>
+        <radialGradient id="ufoGlass" cx="50%" cy="40%" r="65%">
+          <stop offset="0" stop-color="rgba(198,221,255,.55)"/><stop offset="1" stop-color="rgba(120,150,210,.12)"/>
+        </radialGradient>
+        <linearGradient id="ufoBeam" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="rgba(230,189,106,.55)"/><stop offset="1" stop-color="rgba(230,189,106,0)"/>
+        </linearGradient>
+        <clipPath id="ufoDome"><circle cx="80" cy="50" r="25"/></clipPath>
+      </defs>
+
+      <!-- thruster beam -->
+      <path d="M64 84 L96 84 L80 120 Z" fill="url(#ufoBeam)"/>
+      <!-- saucer -->
+      <ellipse cx="80" cy="80" rx="60" ry="14" fill="#5e4517" opacity=".5"/>
+      <ellipse cx="80" cy="74" rx="62" ry="17" fill="url(#ufoHull)" stroke="#523911" stroke-width=".8"/>
+      <ellipse cx="80" cy="70" rx="50" ry="4" fill="rgba(255,255,255,.22)"/>
+      <ellipse cx="80" cy="66" rx="42" ry="13" fill="url(#ufoCap)" stroke="#523911" stroke-width=".6"/>
+      <!-- glass dome + face peeping out -->
+      <circle cx="80" cy="50" r="27" fill="url(#ufoGlass)" stroke="rgba(230,189,106,.5)" stroke-width="1"/>
+      <image href="assets/img/favicon.png" xlink:href="assets/img/favicon.png" x="54" y="22" width="52" height="54" clip-path="url(#ufoDome)" preserveAspectRatio="xMidYMid slice"/>
+      <circle cx="80" cy="50" r="25" fill="none" stroke="url(#ufoHull)" stroke-width="3"/>
+      <circle cx="80" cy="50" r="25" fill="none" stroke="#523911" stroke-width=".7"/>
+      <path d="M63 42 a24 24 0 0 1 16 -15" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="2.4" stroke-linecap="round"/>
+      <!-- running lights -->
+      <g class="ufo-lights">
+        <circle cx="50" cy="78" r="3" fill="#ffe6a8"/>
+        <circle cx="80" cy="83" r="3" fill="#ffe6a8"/>
+        <circle cx="110" cy="78" r="3" fill="#ffe6a8"/>
+      </g>
+    </svg>
+  </div>
 
   <a class="corner l" href="#home" aria-label="Back to top">SK&middot;OS / v2.6</a>
   <span class="corner r">22.57&deg;N 88.36&deg;E</span>
@@ -934,6 +999,65 @@
       caro.addEventListener('focusin', pause);
       caro.addEventListener('focusout', play);
     }
+  })();
+
+  // ---- spaceship: flies along your scroll progress through the page ----
+  (function(){
+    const ship=document.querySelector('.spaceship'); if(!ship) return;
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; // CSS hides it
+    let w=ship.offsetWidth||100;
+    function place(){
+      const doc=document.documentElement;
+      const max=doc.scrollHeight - innerHeight;
+      const p = max>0 ? Math.min(1, Math.max(0, (scrollY||doc.scrollTop)/max)) : 0;
+      w=ship.offsetWidth||w;
+      const x = 14 + p*Math.max(0, innerWidth - w - 28);      // left edge → right edge
+      const y = innerHeight*0.085 + Math.sin(p*Math.PI)*innerHeight*0.05; // gentle flight arc
+      ship.style.transform='translate('+x.toFixed(1)+'px,'+y.toFixed(1)+'px)';
+      ship.style.opacity='1';
+    }
+    addEventListener('scroll', place, {passive:true});
+    addEventListener('resize', place, {passive:true});
+    addEventListener('load', place);
+    place();
+  })();
+
+  // ---- founder line: type it out like a terminal ----
+  (function(){
+    const el=document.querySelector('#home .role'); if(!el) return;
+    // flatten existing markup into [{ch, bold}] so <b>FOUNDER</b> stays bold
+    const seq=[];
+    el.childNodes.forEach(node=>{
+      const bold = node.nodeName==='B';
+      for(const ch of node.textContent) seq.push({ch, bold});
+    });
+    if(!seq.length) return;
+    const fullText=seq.map(s=>s.ch).join('');
+    el.setAttribute('aria-label', fullText);                 // screen readers get the whole line
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return; // leave static text as-is
+
+    const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    function render(n){
+      let html='', curBold=null, buf='';
+      const flush=()=>{ if(buf){ html += curBold ? '<b>'+esc(buf)+'</b>' : esc(buf); buf=''; } };
+      for(let i=0;i<n;i++){ const c=seq[i]; if(c.bold!==curBold){ flush(); curBold=c.bold; } buf+=c.ch; }
+      flush();
+      return '<span aria-hidden="true">'+html+'</span><span class="tw-caret" aria-hidden="true"></span>';
+    }
+
+    el.innerHTML=render(0);
+    let i=0; const total=seq.length;
+    function step(){
+      i++; el.innerHTML=render(i);
+      if(i<total){
+        const ch=seq[i-1].ch;
+        let d=34+Math.random()*32;                 // human-ish keystrokes
+        if(ch===','||ch===';') d=240;
+        else if(ch==='.'||ch==='—') d=320;     // longer pause on period / em-dash
+        setTimeout(step, d);
+      }
+    }
+    setTimeout(step, 700); // let the hero reveal settle, then start typing
   })();
 
   // ---- open briefs: business ideas i wish someone would build ----

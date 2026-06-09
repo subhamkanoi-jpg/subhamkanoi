@@ -348,6 +348,33 @@
   .const h3{font-size:1rem; color:var(--cream); letter-spacing:.1em}
   .const p{font-family:var(--mono); font-weight:300; font-size:.83rem; color:var(--dim); margin-top:.55rem; line-height:1.6}
 
+  /* ---- ideas / open briefs ---- */
+  .ideas-meta{
+    display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; margin-top:.7rem;
+    font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);
+  }
+  .ideas-meta .pulse{width:7px; height:7px; border-radius:50%; background:var(--brass); box-shadow:0 0 0 0 rgba(230,189,106,.55); animation:tapPulse 1.9s ease-out infinite}
+  .ideas-meta b{color:var(--brass); font-weight:500}
+  @media (prefers-reduced-motion: reduce){.ideas-meta .pulse{animation:none}}
+  .ideas-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1.1rem; margin-top:2.2rem}
+  @media(max-width:760px){.ideas-grid{grid-template-columns:1fr}}
+  .idea{
+    position:relative; border:1px solid var(--line); border-left:2px solid var(--brass-deep);
+    background:rgba(233,233,241,.014); padding:1.35rem 1.5rem 1.3rem;
+    display:flex; flex-direction:column; gap:.6rem;
+    transition:transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .idea:hover{transform:translateY(-4px); border-left-color:var(--brass); background:rgba(230,189,106,.045)}
+  .idea-head{display:flex; align-items:center; justify-content:space-between; gap:.8rem}
+  .idea-id{font-family:var(--mono); font-size:.6rem; letter-spacing:.2em; text-transform:uppercase; color:var(--faint)}
+  .idea-tag{font-family:var(--mono); font-size:.55rem; letter-spacing:.16em; text-transform:uppercase; color:var(--brass); border:1px solid rgba(230,189,106,.3); border-radius:100px; padding:3px 10px; white-space:nowrap}
+  .idea-title{font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.03em; color:var(--cream); font-size:1.1rem; line-height:1.15; margin:.1rem 0 0}
+  .idea-desc{font-family:var(--mono); font-weight:300; font-size:.85rem; color:var(--cream-2); line-height:1.65; margin:0}
+  .idea-itch{font-family:var(--mono); font-size:.74rem; color:var(--dim); line-height:1.55; margin:.15rem 0 0}
+  .idea-itch span{color:var(--terra); letter-spacing:.14em; text-transform:uppercase; font-size:.56rem; display:block; margin-bottom:.25rem}
+  .idea-foot{display:flex; align-items:center; gap:.5rem; margin-top:auto; padding-top:.5rem; font-family:var(--mono); font-size:.58rem; letter-spacing:.16em; text-transform:uppercase; color:var(--brass-deep)}
+  .idea-foot .od{width:6px; height:6px; border-radius:50%; background:var(--brass); box-shadow:0 0 8px rgba(230,189,106,.6)}
+
   /* ---- lineage map ---- */
   .family-map{margin-top:2.7rem; position:relative}
   .family-map::before{
@@ -516,7 +543,8 @@
     <a href="#lunarlog"><span class="dk-l">lunar log</span><span class="dk-n">03</span></a>
     <a href="#constants"><span class="dk-l">constants</span><span class="dk-n">04</span></a>
     <a href="#lineage"><span class="dk-l">lineage</span><span class="dk-n">05</span></a>
-    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">06</span></a>
+    <a href="#ideas"><span class="dk-l">open briefs</span><span class="dk-n">06</span></a>
+    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">07</span></a>
   </nav>
 
   <div class="wrap">
@@ -689,9 +717,20 @@
 
     <div class="divider"></div>
 
+    <!-- IDEAS / OPEN BRIEFS -->
+    <section id="ideas">
+      <p class="label reveal">// 06 &mdash; open briefs</p>
+      <h2 class="reveal" data-d="1">Someone, build this.</h2>
+      <p class="lede reveal" data-d="2">stray ideas that won&rsquo;t leave my head. i don&rsquo;t have time to build them &mdash; i wish you would. take any one &mdash; no permission, no credit needed.</p>
+      <div class="ideas-meta reveal" data-d="2"><span class="pulse" aria-hidden="true"></span><span><b id="ideasCount">0</b> signals &middot; all unclaimed &middot; up for grabs</span></div>
+      <div class="ideas-grid reveal" data-d="2" id="ideasGrid" aria-label="Business ideas, free to build"></div>
+    </section>
+
+    <div class="divider"></div>
+
     <!-- UPLINK -->
     <section id="uplink">
-      <p class="label reveal">// 06 &mdash; uplink</p>
+      <p class="label reveal">// 07 &mdash; uplink</p>
       <h2 class="reveal" data-d="1">Open channel.</h2>
       <p class="lede reveal" data-d="2">food, work, kolkata, or the stars. the door stays open.</p>
       <div class="links reveal" data-d="2">
@@ -773,7 +812,7 @@
   // ---- section nav: scroll-spy (always marks the current section) ----
   (function(){
     const links=[...document.querySelectorAll('.dock a')]; if(!links.length) return;
-    const ids=['home','identity','operations','lunarlog','constants','lineage','uplink'];
+    const ids=['home','identity','operations','lunarlog','constants','lineage','ideas','uplink'];
     const map={}; links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
     let ticking=false, cur='';
     function update(){
@@ -792,6 +831,38 @@
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
   },{threshold:.16, rootMargin:"0px 0px -8% 0px"});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ---- open briefs: business ideas i wish someone would build ----
+  (function(){
+    const grid=document.getElementById('ideasGrid'); if(!grid) return;
+
+    /* ╔══════════════════════════════════════════════════════════════╗
+       ║  ADD AN IDEA: copy one { ... } block below, edit the text,    ║
+       ║  done. `tag` = a short category. `itch` is optional.          ║
+       ╚══════════════════════════════════════════════════════════════╝ */
+    const IDEAS=[
+      { tag:'ayur-tech', title:'Nadi Band',
+        desc:'a smart band that reads your wrist like a vaidya &mdash; mapping vata, pitta &amp; kapha and flagging the imbalance before you feel it. the years inside a nadi chikitsak&rsquo;s fingertips, sealed into a wearable.',
+        itch:'nadi pariksha takes a lifetime to master and a clinic to reach. your own pulse should just be able to tell you.' },
+
+      { tag:'home-care', title:'Iron-Proof Wash',
+        desc:'a detergent that neutralises the iron in hard water so colour stays put &mdash; no fortune spent on filters you replace every few months, no good shirt ageing a year in a single wash.',
+        itch:'iron-heavy water quietly bleeds the colour out of everything &mdash; even the best brands fade after a couple of washes.' },
+    ];
+    /* ── end of ideas list ── */
+
+    const pad=n=>String(n).padStart(3,'0');
+    grid.innerHTML=IDEAS.map((d,i)=>(
+      '<article class="idea">'
+      + '<div class="idea-head"><span class="idea-id">idea_'+pad(i+1)+'</span><span class="idea-tag">'+d.tag+'</span></div>'
+      + '<h3 class="idea-title">'+d.title+'</h3>'
+      + '<p class="idea-desc">'+d.desc+'</p>'
+      + (d.itch ? '<p class="idea-itch"><span>the itch</span>'+d.itch+'</p>' : '')
+      + '<div class="idea-foot"><span class="od" aria-hidden="true"></span>up for grabs</div>'
+      + '</article>'
+    )).join('');
+    const cnt=document.getElementById('ideasCount'); if(cnt) cnt.textContent=IDEAS.length;
+  })();
 
   // ---- the birth sky: Subham's chart as an interactive constellation ----
   (function(){

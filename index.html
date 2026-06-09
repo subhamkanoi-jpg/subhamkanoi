@@ -276,6 +276,49 @@
   .spec-row .v{font-family:var(--mono); color:var(--cream-2); font-size:1rem; font-weight:300}
   @media(max-width:600px){.spec-row{grid-template-columns:1fr; gap:.4rem}}
 
+  /* ---- carousel (identity + operations) ---- */
+  .carousel{--caro-dur:6.5s; margin-top:2.2rem}
+  .caro-thumb[data-i="1"]{--caro-dur:12s}   /* operations dwells longer — more to read */
+  .caro-viewport{position:relative; height:0; transition:height .5s cubic-bezier(.4,0,.2,1)}
+  .caro-slide{
+    position:absolute; top:0; left:0; width:100%;
+    opacity:0; transform:translateY(12px); pointer-events:none;
+    transition:opacity .55s ease, transform .55s ease;
+  }
+  .caro-slide.active{opacity:1; transform:none; pointer-events:auto}
+  @media (prefers-reduced-motion: reduce){
+    .caro-viewport{transition:none}
+    .caro-slide{transition:opacity .2s ease}
+  }
+  .caro-tag{
+    font-family:var(--mono); font-size:.66rem; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--brass); margin-bottom:1rem; display:flex; align-items:center; gap:.7rem;
+  }
+  .caro-tag::before{content:""; width:20px; height:1px; background:var(--brass-deep)}
+  .caro-slide h2{margin-bottom:1rem}
+  .caro-slide .spec{margin-top:1.6rem}
+
+  .caro-thumbs{display:flex; gap:.7rem; margin-top:1.8rem; border-top:1px solid var(--line); padding-top:1.3rem}
+  @media(max-width:600px){.caro-thumbs{gap:.5rem}}
+  .caro-thumb{
+    flex:1; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:.5rem;
+    background:rgba(233,233,241,.02); border:1px solid var(--line); border-radius:8px;
+    padding:.75rem .9rem .65rem; opacity:.58;
+    transition:opacity .3s ease, border-color .3s ease, background .3s ease, transform .25s ease;
+  }
+  .caro-thumb:hover, .caro-thumb:focus-visible{opacity:.92; transform:translateY(-2px); outline:none; border-color:rgba(230,189,106,.3)}
+  .caro-thumb.active{opacity:1; border-color:rgba(230,189,106,.45); background:rgba(230,189,106,.06)}
+  .caro-thumb .ct-n{font-family:var(--mono); font-size:.6rem; letter-spacing:.2em; color:var(--brass)}
+  .caro-thumb .ct-l{font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--cream); font-size:.92rem; line-height:1}
+  .caro-thumb .ct-bar{display:block; height:2px; width:100%; background:var(--line); overflow:hidden; margin-top:.15rem; border-radius:2px}
+  .caro-thumb .ct-fill{display:block; height:100%; width:0; background:var(--brass)}
+  .caro-thumb.active .ct-fill{animation:caroFill var(--caro-dur) linear forwards}
+  .carousel.paused .caro-thumb.active .ct-fill{animation-play-state:paused}
+  @keyframes caroFill{from{width:0}to{width:100%}}
+  @media (prefers-reduced-motion: reduce){
+    .caro-thumb.active .ct-fill{animation:none; width:100%}
+  }
+
   /* ---- lunar log ---- */
   .ml-console{
     display:grid; grid-template-columns:230px 1fr; gap:clamp(24px,4vw,52px); align-items:center;
@@ -538,13 +581,12 @@
 
   <nav class="dock" id="dock" aria-label="Sections">
     <a href="#home"><span class="dk-l">home</span><span class="dk-n">00</span></a>
-    <a href="#identity"><span class="dk-l">identity</span><span class="dk-n">01</span></a>
-    <a href="#operations"><span class="dk-l">operations</span><span class="dk-n">02</span></a>
-    <a href="#lunarlog"><span class="dk-l">lunar log</span><span class="dk-n">03</span></a>
-    <a href="#constants"><span class="dk-l">constants</span><span class="dk-n">04</span></a>
-    <a href="#lineage"><span class="dk-l">lineage</span><span class="dk-n">05</span></a>
-    <a href="#ideas"><span class="dk-l">open briefs</span><span class="dk-n">06</span></a>
-    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">07</span></a>
+    <a href="#identity"><span class="dk-l">the work</span><span class="dk-n">01</span></a>
+    <a href="#lunarlog"><span class="dk-l">lunar log</span><span class="dk-n">02</span></a>
+    <a href="#constants"><span class="dk-l">constants</span><span class="dk-n">03</span></a>
+    <a href="#lineage"><span class="dk-l">lineage</span><span class="dk-n">04</span></a>
+    <a href="#ideas"><span class="dk-l">open briefs</span><span class="dk-n">05</span></a>
+    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">06</span></a>
   </nav>
 
   <div class="wrap">
@@ -571,27 +613,44 @@
 
     <div class="divider"></div>
 
-    <!-- IDENTITY -->
+    <!-- THE WORK (identity + operations, auto-rotating carousel) -->
     <section id="identity">
-      <p class="label reveal">// 01 &mdash; identity</p>
-      <h2 class="reveal" data-d="1">I feed people.</h2>
-      <p class="lede reveal" data-d="2">
-        i build and run corporate cafeterias &mdash; the unglamorous engine rooms where a
-        workday gets its breakfast, its lunch, its 4&nbsp;o&rsquo;clock chai. honest work.
-        i&rsquo;m quietly proud of it.
-      </p>
-    </section>
+      <p class="label reveal">// 01 &mdash; the work</p>
+      <div class="carousel reveal" data-d="1" id="workCarousel" aria-roledescription="carousel" aria-label="The work — identity and operations">
+        <div class="caro-viewport">
 
-    <div class="divider"></div>
+          <article class="caro-slide" id="slide-identity" role="group" aria-roledescription="slide" aria-label="Identity">
+            <p class="caro-tag">01 &middot; identity</p>
+            <h2>I feed people.</h2>
+            <p class="lede">
+              i build and run corporate cafeterias &mdash; the unglamorous engine rooms where a
+              workday gets its breakfast, its lunch, its 4&nbsp;o&rsquo;clock chai. honest work.
+              i&rsquo;m quietly proud of it.
+            </p>
+          </article>
 
-    <!-- OPERATIONS -->
-    <section id="operations">
-      <p class="label reveal">// 02 &mdash; operations</p>
-      <h2 class="reveal" data-d="1">What runs.</h2>
-      <div class="spec">
-        <div class="spec-row reveal"><div class="k">FN_01 / reliability</div><div class="v">a hot meal, every weekday. on time. that&rsquo;s the whole job.</div></div>
-        <div class="spec-row reveal"><div class="k">FN_02 / people</div><div class="v">a kitchen is a team. i&rsquo;d rather be the one who looked after them than the one who only scaled.</div></div>
-        <div class="spec-row reveal"><div class="k">FN_03 / craft</div><div class="v">logistics, hygiene, costing. the same dal tasting right on a tuesday as it did on monday.</div></div>
+          <article class="caro-slide" id="slide-operations" role="group" aria-roledescription="slide" aria-label="Operations">
+            <p class="caro-tag">02 &middot; operations</p>
+            <h2>What runs.</h2>
+            <div class="spec">
+              <div class="spec-row"><div class="k">FN_01 / reliability</div><div class="v">a hot meal, every weekday. on time. that&rsquo;s the whole job.</div></div>
+              <div class="spec-row"><div class="k">FN_02 / people</div><div class="v">a kitchen is a team. i&rsquo;d rather be the one who looked after them than the one who only scaled.</div></div>
+              <div class="spec-row"><div class="k">FN_03 / craft</div><div class="v">logistics, hygiene, costing. the same dal tasting right on a tuesday as it did on monday.</div></div>
+            </div>
+          </article>
+
+        </div>
+
+        <div class="caro-thumbs" role="tablist" aria-label="Switch view">
+          <button class="caro-thumb active" type="button" data-i="0" role="tab" aria-selected="true" aria-controls="slide-identity">
+            <span class="ct-n">01</span><span class="ct-l">identity</span>
+            <span class="ct-bar" aria-hidden="true"><span class="ct-fill"></span></span>
+          </button>
+          <button class="caro-thumb" type="button" data-i="1" role="tab" aria-selected="false" aria-controls="slide-operations">
+            <span class="ct-n">02</span><span class="ct-l">operations</span>
+            <span class="ct-bar" aria-hidden="true"><span class="ct-fill"></span></span>
+          </button>
+        </div>
       </div>
     </section>
 
@@ -599,7 +658,7 @@
 
     <!-- LUNAR LOG -->
     <section class="moonlog" id="lunarlog">
-      <p class="label reveal">// 03 &mdash; lunar log</p>
+      <p class="label reveal">// 02 &mdash; lunar log</p>
       <h2 class="reveal" data-d="1">Phases of a journey.</h2>
       <p class="lede reveal" data-d="2">the moon waxed and waned with my fortunes &mdash; new at every fall, full at every peak. each moon below is a chapter &mdash; tap one to read it.</p>
       <div class="ml-console reveal" data-d="2">
@@ -624,7 +683,7 @@
 
     <!-- CONSTANTS -->
     <section id="constants">
-      <p class="label reveal">// 04 &mdash; constants</p>
+      <p class="label reveal">// 03 &mdash; constants</p>
       <h2 class="reveal" data-d="1">Non-negotiables.</h2>
       <div class="consts">
         <div class="const reveal" data-d="1"><h3>Pride</h3><p>the quiet kind. a thing built well, a promise kept. lights on, food out, people fed.</p></div>
@@ -637,7 +696,7 @@
 
     <!-- LINEAGE -->
     <section id="lineage">
-      <p class="label reveal">// 05 &mdash; lineage</p>
+      <p class="label reveal">// 04 &mdash; lineage</p>
       <h2 class="reveal" data-d="1">Family tree.</h2>
       <p class="lede reveal" data-d="2">two houses, two routes, one present node. mapped as memory, inheritance, and signal.</p>
       <div class="family-map reveal" data-d="2" aria-label="Family tree">
@@ -719,7 +778,7 @@
 
     <!-- IDEAS / OPEN BRIEFS -->
     <section id="ideas">
-      <p class="label reveal">// 06 &mdash; open briefs</p>
+      <p class="label reveal">// 05 &mdash; open briefs</p>
       <h2 class="reveal" data-d="1">Someone, build this.</h2>
       <p class="lede reveal" data-d="2">stray ideas that won&rsquo;t leave my head. i don&rsquo;t have time to build them &mdash; i wish you would. take any one &mdash; no permission, no credit needed.</p>
       <div class="ideas-meta reveal" data-d="2"><span class="pulse" aria-hidden="true"></span><span><b id="ideasCount">0</b> signals &middot; all unclaimed &middot; up for grabs</span></div>
@@ -730,7 +789,7 @@
 
     <!-- UPLINK -->
     <section id="uplink">
-      <p class="label reveal">// 07 &mdash; uplink</p>
+      <p class="label reveal">// 06 &mdash; uplink</p>
       <h2 class="reveal" data-d="1">Open channel.</h2>
       <p class="lede reveal" data-d="2">food, work, kolkata, or the stars. the door stays open.</p>
       <div class="links reveal" data-d="2">
@@ -812,7 +871,7 @@
   // ---- section nav: scroll-spy (always marks the current section) ----
   (function(){
     const links=[...document.querySelectorAll('.dock a')]; if(!links.length) return;
-    const ids=['home','identity','operations','lunarlog','constants','lineage','ideas','uplink'];
+    const ids=['home','identity','lunarlog','constants','lineage','ideas','uplink'];
     const map={}; links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
     let ticking=false, cur='';
     function update(){
@@ -831,6 +890,51 @@
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
   },{threshold:.16, rootMargin:"0px 0px -8% 0px"});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ---- the work: identity + operations carousel ----
+  (function(){
+    const caro=document.getElementById('workCarousel'); if(!caro) return;
+    const viewport=caro.querySelector('.caro-viewport');
+    const slides=[...caro.querySelectorAll('.caro-slide')];
+    const thumbs=[...caro.querySelectorAll('.caro-thumb')];
+    if(!slides.length) return;
+    const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let cur=-1;
+
+    function setHeight(){ if(slides[cur]) viewport.style.height=slides[cur].offsetHeight+'px'; }
+    function go(i){
+      i=(i+slides.length)%slides.length;
+      // re-arm the progress animation even when re-selecting the same active thumb
+      if(i===cur){ const f=thumbs[i].querySelector('.ct-fill'); if(f){ f.style.animation='none'; void f.offsetWidth; f.style.animation=''; } return; }
+      cur=i;
+      slides.forEach((s,si)=>s.classList.toggle('active', si===i));
+      thumbs.forEach((t,ti)=>{ const on=ti===i; t.classList.toggle('active', on); t.setAttribute('aria-selected', on?'true':'false'); });
+      setHeight();
+    }
+
+    go(0);
+    requestAnimationFrame(setHeight);
+    addEventListener('load', setHeight);
+    addEventListener('resize', setHeight);
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(setHeight);
+
+    thumbs.forEach((t,ti)=> t.addEventListener('click', ()=>go(ti)) );
+
+    if(!reduce){
+      // auto-advance when the active thumb's progress bar finishes
+      caro.addEventListener('animationend', e=>{
+        if(e.animationName!=='caroFill') return;
+        const th=e.target.closest('.caro-thumb');
+        if(th && th.classList.contains('active')) go(cur+1);
+      });
+      const pause=()=>caro.classList.add('paused');
+      const play=()=>caro.classList.remove('paused');
+      caro.addEventListener('mouseenter', pause);
+      caro.addEventListener('mouseleave', play);
+      caro.addEventListener('focusin', pause);
+      caro.addEventListener('focusout', play);
+    }
+  })();
 
   // ---- open briefs: business ideas i wish someone would build ----
   (function(){

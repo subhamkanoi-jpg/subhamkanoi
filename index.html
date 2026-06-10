@@ -425,6 +425,35 @@
   .idea-foot{display:flex; align-items:center; gap:.5rem; margin-top:auto; padding-top:.5rem; font-family:var(--mono); font-size:.58rem; letter-spacing:.16em; text-transform:uppercase; color:var(--brass-deep)}
   .idea-foot .od{width:6px; height:6px; border-radius:50%; background:var(--brass); box-shadow:0 0 8px rgba(230,189,106,.6)}
 
+  /* ---- off the clock / sport ---- */
+  .field-meta{
+    display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; margin-top:.7rem;
+    font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase; color:var(--dim);
+  }
+  .field-meta .pulse{width:7px; height:7px; border-radius:50%; background:var(--brass); box-shadow:0 0 0 0 rgba(230,189,106,.55); animation:tapPulse 1.9s ease-out infinite}
+  .field-meta b{color:var(--brass); font-weight:500}
+  @media (prefers-reduced-motion: reduce){.field-meta .pulse{animation:none}}
+  .field-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:1.1rem; margin-top:2.2rem}
+  @media(max-width:760px){.field-grid{grid-template-columns:1fr}}
+  .field-card{
+    position:relative; border:1px solid var(--line); border-left:2px solid var(--brass-deep);
+    background:rgba(233,233,241,.014); overflow:hidden; display:flex; flex-direction:column;
+    transition:transform .25s ease, border-color .25s ease, background .25s ease;
+  }
+  .field-card:hover{transform:translateY(-4px); border-left-color:var(--brass); background:rgba(230,189,106,.045)}
+  .field-photo{position:relative; aspect-ratio:16/10; overflow:hidden; border-bottom:1px solid var(--line); background:rgba(233,233,241,.02)}
+  .field-photo img{width:100%; height:100%; object-fit:cover; display:block; filter:grayscale(.5) contrast(1.05) brightness(.95); transition:filter .45s ease, transform .55s ease}
+  .field-card:hover .field-photo img{filter:grayscale(0) contrast(1.05) brightness(1); transform:scale(1.03)}
+  .field-photo::before{content:"REC"; position:absolute; top:9px; left:9px; z-index:2; font-family:var(--mono); font-size:.55rem; letter-spacing:.18em; color:var(--brass); background:var(--panel-strong); padding:2px 7px}
+  .field-body{padding:1.3rem 1.45rem 1.35rem; display:flex; flex-direction:column; gap:.55rem; flex:1}
+  .field-head{display:flex; align-items:flex-start; justify-content:space-between; gap:.8rem}
+  .field-sport{font-family:var(--display); font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--cream); font-size:1.1rem; line-height:1.15; margin:0}
+  .field-result{font-family:var(--mono); font-size:.55rem; letter-spacing:.16em; text-transform:uppercase; color:var(--brass); border:1px solid rgba(230,189,106,.3); border-radius:100px; padding:3px 10px; white-space:nowrap; flex:0 0 auto}
+  .field-when{font-family:var(--mono); font-size:.62rem; letter-spacing:.16em; text-transform:uppercase; color:var(--faint)}
+  .field-note{font-family:var(--mono); font-weight:300; font-size:.85rem; color:var(--cream-2); line-height:1.65; margin:.1rem 0 0}
+  .field-foot{display:flex; align-items:center; gap:.5rem; margin-top:auto; padding-top:.55rem; font-family:var(--mono); font-size:.58rem; letter-spacing:.16em; text-transform:uppercase; color:var(--brass-deep)}
+  .field-foot .od{width:6px; height:6px; border-radius:50%; background:var(--brass); box-shadow:0 0 8px rgba(230,189,106,.6)}
+
   /* ---- lineage map ---- */
   .family-map{margin-top:2.7rem; position:relative}
   .family-map::before{
@@ -650,8 +679,9 @@
     <a href="#lunarlog"><span class="dk-l">lunar log</span><span class="dk-n">02</span></a>
     <a href="#constants"><span class="dk-l">constants</span><span class="dk-n">03</span></a>
     <a href="#lineage"><span class="dk-l">lineage</span><span class="dk-n">04</span></a>
-    <a href="#ideas"><span class="dk-l">open briefs</span><span class="dk-n">05</span></a>
-    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">06</span></a>
+    <a href="#field"><span class="dk-l">off the clock</span><span class="dk-n">05</span></a>
+    <a href="#ideas"><span class="dk-l">open briefs</span><span class="dk-n">06</span></a>
+    <a href="#uplink"><span class="dk-l">uplink</span><span class="dk-n">07</span></a>
   </nav>
 
   <div class="wrap">
@@ -841,9 +871,20 @@
 
     <div class="divider"></div>
 
+    <!-- OFF THE CLOCK — sporting moments -->
+    <section id="field">
+      <p class="label reveal">// 05 &mdash; off the clock</p>
+      <h2 class="reveal" data-d="1">For the love of the game.</h2>
+      <p class="lede reveal" data-d="2">no athlete &mdash; just someone who plays hard on a weekend and stays late after the whistle. a few games i&rsquo;m fond of, and the odd day i&rsquo;m quietly chuffed about. not trophies. just good company and a sport well played.</p>
+      <div class="field-meta reveal" data-d="2"><span class="pulse" aria-hidden="true"></span><span><b id="fieldCount">0</b> entries &middot; amateur &middot; for the joy of it</span></div>
+      <div class="field-grid reveal" data-d="2" id="fieldGrid" aria-label="Sporting moments"></div>
+    </section>
+
+    <div class="divider"></div>
+
     <!-- IDEAS / OPEN BRIEFS -->
     <section id="ideas">
-      <p class="label reveal">// 05 &mdash; open briefs</p>
+      <p class="label reveal">// 06 &mdash; open briefs</p>
       <h2 class="reveal" data-d="1">Someone, build this.</h2>
       <p class="lede reveal" data-d="2">stray ideas that won&rsquo;t leave my head. i don&rsquo;t have time to build them &mdash; i wish you would. take any one &mdash; no permission, no credit needed.</p>
       <div class="ideas-meta reveal" data-d="2"><span class="pulse" aria-hidden="true"></span><span><b id="ideasCount">0</b> signals &middot; all unclaimed &middot; up for grabs</span></div>
@@ -854,7 +895,7 @@
 
     <!-- UPLINK -->
     <section id="uplink">
-      <p class="label reveal">// 06 &mdash; uplink</p>
+      <p class="label reveal">// 07 &mdash; uplink</p>
       <h2 class="reveal" data-d="1">Open channel.</h2>
       <p class="lede reveal" data-d="2">food, work, kolkata, or the stars. the door stays open.</p>
       <div class="links reveal" data-d="2">
@@ -936,7 +977,7 @@
   // ---- section nav: scroll-spy (always marks the current section) ----
   (function(){
     const links=[...document.querySelectorAll('.dock a')]; if(!links.length) return;
-    const ids=['home','identity','lunarlog','constants','lineage','ideas','uplink'];
+    const ids=['home','identity','lunarlog','constants','lineage','field','ideas','uplink'];
     const map={}; links.forEach(a=>map[a.getAttribute('href').slice(1)]=a);
     let ticking=false, cur='';
     function update(){
@@ -1090,6 +1131,45 @@
       + '</article>'
     )).join('');
     const cnt=document.getElementById('ideasCount'); if(cnt) cnt.textContent=IDEAS.length;
+  })();
+
+  // ---- off the clock: sporting moments i'm fond of ----
+  (function(){
+    const grid=document.getElementById('fieldGrid'); if(!grid) return;
+
+    /* ╔══════════════════════════════════════════════════════════════╗
+       ║  ADD A MOMENT: copy one { ... } block below, edit the text.   ║
+       ║  sport  = the game.   when = where/year.                      ║
+       ║  result = a short, humble tag (e.g. "ran it", "runners-up").  ║
+       ║  note   = a sentence or two — keep it personal, not braggy.   ║
+       ║  img    = OPTIONAL. drop a photo in assets/img/ and put its   ║
+       ║           path here, e.g. img:'assets/img/sport-run.jpg'.     ║
+       ║           leave img out entirely for a text-only card.        ║
+       ║  These are EXAMPLES — replace them with your own.             ║
+       ╚══════════════════════════════════════════════════════════════╝ */
+    const ACCOLADES=[
+      { sport:'Running', when:'Kolkata · 2024', result:'finished',
+        note:'a half-marathon i had no business signing up for. last hour was pure stubbornness. crossed the line, sat down on the curb, grinned like an idiot.' },
+
+      { sport:'Cricket', when:'Sunday league', result:'middle order',
+        note:'weekend club side with the same lot for years now. i don&rsquo;t win us many games &mdash; but i&rsquo;ll field all day and i never miss a match.' },
+    ];
+    /* ── end of moments list ── */
+
+    const esc=s=>String(s);
+    grid.innerHTML=ACCOLADES.map(d=>(
+      '<article class="field-card">'
+      + (d.img ? '<div class="field-photo"><img src="'+d.img+'" alt="'+esc(d.sport)+' — '+esc(d.when||'')+'" loading="lazy" /></div>' : '')
+      + '<div class="field-body">'
+      +   '<div class="field-head"><h3 class="field-sport">'+d.sport+'</h3>'
+      +   (d.result ? '<span class="field-result">'+d.result+'</span>' : '')+'</div>'
+      +   (d.when ? '<div class="field-when">'+d.when+'</div>' : '')
+      +   (d.note ? '<p class="field-note">'+d.note+'</p>' : '')
+      +   '<div class="field-foot"><span class="od" aria-hidden="true"></span>for the joy of it</div>'
+      + '</div>'
+      + '</article>'
+    )).join('');
+    const cnt=document.getElementById('fieldCount'); if(cnt) cnt.textContent=ACCOLADES.length;
   })();
 
   // ---- the birth sky: Subham's chart as an interactive constellation ----

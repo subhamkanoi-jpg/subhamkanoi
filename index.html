@@ -1639,88 +1639,208 @@
     audio.addEventListener('play', ()=>setOn(true));
   })();
 
-  /* ───────── personal day planner — private, on-device, hidden from the public dock ─────────
-     opens on the #day hash or Shift+D. PIN-gated (deterrence only — there is no server,
-     so the gate just keeps casual eyes out). every entry lives in this browser's
-     localStorage and is never committed or published. */
+  /* ───────── personal day planner — private, PIN-locked, optional cross-device sync ─────────
+     Opens on the #day hash or Shift+D.
+
+     • Leave SB_URL / SB_KEY blank → everything stays in THIS browser only (no sync).
+     • Fill them in (free Supabase project) → the same PIN opens the same plan on every
+       device. Your PIN encrypts the data with AES-GCM *before it leaves the browser*, so
+       the server only ever stores ciphertext. The PIN is the only key — lose it, lose the
+       data. The "anon" key below is meant to be public; it is safe to commit. */
   (function(){
+    /* ── Supabase sync (the anon key below is public by design — safe to commit) ── */
+    const SB_URL = 'https://mbcujecnfnudqbavzvqb.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iY3VqZWNuZm51ZHFiYXZ6dnFiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxMzYwMDgsImV4cCI6MjA5NzcxMjAwOH0.4Lp1v7xdoMFelKJvMyV6AFNFZN-eUpw1Db2iZjCu69w';
+    const SYNC = /^https:\/\//.test(SB_URL) && SB_KEY.length > 20;
+
     const overlay=document.getElementById('plOverlay'); if(!overlay) return;
     const gate=document.getElementById('plGate'), main=document.getElementById('plMain');
     const pin1=document.getElementById('plPin1'), pin2=document.getElementById('plPin2');
     const gateTitle=document.getElementById('plGateTitle'), gateMsg=document.getElementById('plGateMsg'), err=document.getElementById('plErr');
     const grid=document.getElementById('plGrid'), dateEl=document.getElementById('plDate');
     const startEl=document.getElementById('plStart'), endEl=document.getElementById('plEnd');
-    const saved=document.getElementById('plSaved');
+    const saved=document.getElementById('plSaved'), unlockBtn=document.getElementById('plUnlock');
 
-    const K_PIN='sk.day.pin', K_RANGE='sk.day.range', K_ENTRIES='sk.day.entries', K_SESSION='sk.day.unlocked';
+    const K_PIN='sk.day.pin', K_RANGE='sk.day.range', K_ENTRIES='sk.day.entries', K_META='sk.day.meta', K_SESSION='sk.day.unlocked';
     const DAY=['SUN','MON','TUE','WED','THU','FRI','SAT'];
     const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-    const REST='saved locally · this device only';
+    const REST = SYNC ? 'synced · across your devices' : 'saved locally · this device only';
 
-    let view=new Date(), entries={}, range={start:6,end:23}, saveTimer=0, flashTimer=0;
+    let view=new Date(), entries={}, meta={}, range={start:6,end:23};
+    let saveTimer=0, pushTimer=0, flashTimer=0;
+    let cryptoKey=null, rowId=null;   // populated after a successful unlock (sync mode)
 
+    // ── local working copy ──
     function load(){
       try{ entries=JSON.parse(localStorage.getItem(K_ENTRIES))||{}; }catch(e){ entries={}; }
+      try{ meta=JSON.parse(localStorage.getItem(K_META))||{}; }catch(e){ meta={}; }
       try{ const r=JSON.parse(localStorage.getItem(K_RANGE)); if(r&&Number.isInteger(r.start)) range=r; }catch(e){}
     }
-    function persist(){ try{ localStorage.setItem(K_ENTRIES, JSON.stringify(entries)); }catch(e){} }
+    function persist(){ try{ localStorage.setItem(K_ENTRIES, JSON.stringify(entries)); localStorage.setItem(K_META, JSON.stringify(meta)); }catch(e){} }
     function key(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
     function sameDay(a,b){ return key(a)===key(b); }
     function flash(msg){ saved.textContent=msg; clearTimeout(flashTimer); flashTimer=setTimeout(()=>{ saved.textContent=REST; }, 2200); }
+    function setSync(state){
+      if(!SYNC){ saved.textContent=REST; return; }
+      saved.textContent = state==='saving' ? 'syncing…' : state==='offline' ? 'offline · saved on this device' : REST;
+    }
 
-    // deterrence-only hash; SHA-256 where available, tiny fallback otherwise
+    // ── crypto (Web Crypto) ──
+    const TE=new TextEncoder(), TD=new TextDecoder();
+    function b64(buf){ let s='', a=new Uint8Array(buf); for(let i=0;i<a.length;i++) s+=String.fromCharCode(a[i]); return btoa(s); }
+    function unb64(s){ const bin=atob(s), a=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) a[i]=bin.charCodeAt(i); return a; }
     async function hash(s){
       if(window.crypto && crypto.subtle){
-        const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sk·'+s));
-        return [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+        const b=await crypto.subtle.digest('SHA-256', TE.encode('sk·'+s));
+        return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
       }
       let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))>>>0; return 'd'+h.toString(16);
+    }
+    async function deriveKey(pin){
+      const base=await crypto.subtle.importKey('raw', TE.encode(pin), 'PBKDF2', false, ['deriveKey']);
+      return crypto.subtle.deriveKey(
+        {name:'PBKDF2', salt:TE.encode('sk-day-salt-v1'), iterations:120000, hash:'SHA-256'},
+        base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+    }
+    async function deriveId(pin){ return hash('id-v1|'+pin); }   // unguessable row key — needs the PIN
+    async function encryptBlob(k, obj){
+      const iv=crypto.getRandomValues(new Uint8Array(12));
+      const ct=await crypto.subtle.encrypt({name:'AES-GCM', iv}, k, TE.encode(JSON.stringify(obj)));
+      const out=new Uint8Array(iv.length+ct.byteLength); out.set(iv,0); out.set(new Uint8Array(ct),iv.length);
+      return b64(out);
+    }
+    async function decryptBlob(k, blob){
+      const all=unb64(blob), iv=all.slice(0,12), ct=all.slice(12);
+      return JSON.parse(TD.decode(await crypto.subtle.decrypt({name:'AES-GCM', iv}, k, ct)));
+    }
+
+    // ── remote (Supabase RPC; functions guard the table so rows can't be enumerated) ──
+    async function rpc(fn, body){
+      const res=await fetch(SB_URL+'/rest/v1/rpc/'+fn, {
+        method:'POST',
+        headers:{'Content-Type':'application/json', apikey:SB_KEY, Authorization:'Bearer '+SB_KEY},
+        body:JSON.stringify(body)
+      });
+      if(!res.ok) throw new Error('rpc '+fn+' '+res.status);
+      const t=await res.text(); return t ? JSON.parse(t) : null;
+    }
+    function remoteGet(id){ return rpc('get_plan', {p_id:id}); }
+    function remotePut(id, data){ return rpc('put_plan', {p_id:id, p_data:data}); }
+
+    function snapshot(){ return {v:1, entries, meta, range}; }
+    // per-day last-write-wins using meta timestamps; never silently drops a day
+    function mergeIn(remote){
+      if(!remote) return;
+      const rE=remote.entries||{}, rM=remote.meta||{};
+      new Set([...Object.keys(entries), ...Object.keys(rE), ...Object.keys(meta), ...Object.keys(rM)]).forEach(d=>{
+        if((rM[d]||0) > (meta[d]||0)){ if(rE[d]) entries[d]=rE[d]; else delete entries[d]; meta[d]=rM[d]; }
+      });
+      if(remote.range && Number.isInteger(remote.range.start) && !localStorage.getItem(K_RANGE)) range=remote.range;
+      persist();
+    }
+    async function pushRemote(){
+      if(!SYNC || !cryptoKey || !rowId) return;
+      setSync('saving');
+      try{ await remotePut(rowId, await encryptBlob(cryptoKey, snapshot())); setSync('ok'); }
+      catch(e){ setSync('offline'); }
+    }
+    function schedulePush(){ if(!SYNC) return; clearTimeout(pushTimer); pushTimer=setTimeout(pushRemote, 1200); }
+    async function syncPull(){
+      if(!SYNC || !cryptoKey || !rowId) return;
+      try{ const c=await remoteGet(rowId); if(c){ mergeIn(await decryptBlob(cryptoKey, c)); render(); } setSync('ok'); }
+      catch(e){ setSync('offline'); }
     }
 
     function open(){
       overlay.hidden=false; overlay.classList.add('open');
       document.body.style.overflow='hidden';
-      if(sessionStorage.getItem(K_SESSION)==='1') showMain(); else showGate();
+      // sync mode needs the PIN in memory for the key, so only skip the gate while it's still held
+      if(sessionStorage.getItem(K_SESSION)==='1' && (!SYNC || cryptoKey)) showMain(); else showGate();
     }
     function close(){
       overlay.classList.remove('open'); overlay.hidden=true;
       document.body.style.overflow='';
       if(location.hash==='#day') history.replaceState(null,'',location.pathname+location.search);
     }
+    function setBusy(b){ unlockBtn.disabled=b; unlockBtn.textContent=b?'checking…':'unlock'; }
 
     function showGate(){
-      main.hidden=true; gate.hidden=false; err.textContent='';
-      const isNew=!localStorage.getItem(K_PIN);
-      pin2.hidden=!isNew;
-      gateTitle.textContent=isNew?'Set a PIN':'Private';
-      gateMsg.textContent=isNew
-        ? 'this planner is yours alone. choose a PIN — it stays on this device and is never published.'
-        : 'enter your PIN to open the day planner.';
+      main.hidden=true; gate.hidden=false; err.textContent=''; setBusy(false);
+      const known=!!localStorage.getItem(K_PIN);
+      if(SYNC){
+        pin2.hidden=true;
+        gateTitle.textContent = known ? 'Private' : 'Your day, synced';
+        gateMsg.textContent = known
+          ? 'enter your PIN to open the day planner.'
+          : 'enter a PIN to open your planner. the same PIN on any device opens the same plan — it is the only key, so pick one you will remember.';
+      } else {
+        pin2.hidden=known;
+        gateTitle.textContent = known ? 'Private' : 'Set a PIN';
+        gateMsg.textContent = known
+          ? 'enter your PIN to open the day planner.'
+          : 'this planner is yours alone. choose a PIN — it stays on this device and is never published.';
+      }
       pin1.value=''; pin2.value='';
       setTimeout(()=>pin1.focus(), 50);
     }
+
     async function tryUnlock(){
-      const isNew=!localStorage.getItem(K_PIN), v=pin1.value.trim();
+      err.textContent=''; const v=pin1.value.trim();
       if(v.length<4){ err.textContent='use at least 4 characters.'; return; }
+
+      if(SYNC){
+        setBusy(true);
+        let k, id;
+        try{ k=await deriveKey(v); id=await deriveId(v); }
+        catch(e){ err.textContent='this browser can’t unlock (secure crypto unavailable).'; setBusy(false); return; }
+        let cipher=null, online=true;
+        try{ cipher=await remoteGet(id); }catch(e){ online=false; }
+
+        if(!online){   // offline — fall back to this device's cached copy if the PIN matches
+          if(localStorage.getItem(K_PIN) && await hash(v)===localStorage.getItem(K_PIN)){
+            cryptoKey=k; rowId=id; sessionStorage.setItem(K_SESSION,'1'); showMain();
+          } else { err.textContent='can’t reach sync right now — connect once to set up this device.'; }
+          setBusy(false); return;
+        }
+        if(cipher){
+          let blob; try{ blob=await decryptBlob(k, cipher); }
+          catch(e){ err.textContent='wrong PIN.'; pin1.select(); setBusy(false); return; }
+          cryptoKey=k; rowId=id; load(); mergeIn(blob);
+          localStorage.setItem(K_PIN, await hash(v));
+          sessionStorage.setItem(K_SESSION,'1'); showMain(); pushRemote();   // push the merged result back
+          setBusy(false); return;
+        }
+        setBusy(false);
+        if(!confirm('No saved plan was found for this PIN.\n\nStart a fresh plan with it?\n(If you meant to open an existing plan, click Cancel and re-enter your PIN — it is case-sensitive.)')){ pin1.select(); return; }
+        cryptoKey=k; rowId=id; load();
+        localStorage.setItem(K_PIN, await hash(v));
+        sessionStorage.setItem(K_SESSION,'1'); showMain(); pushRemote();
+        return;
+      }
+
+      // ── local-only mode ──
+      const isNew=!localStorage.getItem(K_PIN);
       if(isNew){
         if(v!==pin2.value.trim()){ err.textContent='the two PINs don’t match.'; return; }
         localStorage.setItem(K_PIN, await hash(v));
-      } else {
-        if(await hash(v)!==localStorage.getItem(K_PIN)){ err.textContent='wrong PIN.'; pin1.select(); return; }
-      }
+      } else if(await hash(v)!==localStorage.getItem(K_PIN)){ err.textContent='wrong PIN.'; pin1.select(); return; }
       sessionStorage.setItem(K_SESSION,'1'); showMain();
     }
-    function lock(){ sessionStorage.removeItem(K_SESSION); showGate(); }
+
+    function lock(){ sessionStorage.removeItem(K_SESSION); cryptoKey=null; rowId=null; showGate(); }
     function resetAll(){
-      if(!confirm('This erases your PIN and every planned day on this device. There is no undo. Continue?')) return;
-      localStorage.removeItem(K_PIN); localStorage.removeItem(K_ENTRIES); localStorage.removeItem(K_RANGE);
-      sessionStorage.removeItem(K_SESSION); entries={}; range={start:6,end:23}; showGate();
+      if(!confirm(SYNC
+        ? 'This signs this device out and erases its local copy (your synced plan in the cloud is untouched — your PIN still opens it again). Continue?'
+        : 'This erases your PIN and every planned day on this device. There is no undo. Continue?')) return;
+      [K_PIN,K_ENTRIES,K_META,K_RANGE].forEach(x=>localStorage.removeItem(x));
+      sessionStorage.removeItem(K_SESSION);
+      entries={}; meta={}; range={start:6,end:23}; cryptoKey=null; rowId=null; showGate();
     }
 
     function showMain(){
       gate.hidden=true; main.hidden=false; load();
       startEl.value=range.start; endEl.value=range.end; saved.textContent=REST;
-      render();
+      render(); syncPull();   // catch edits made on another device
     }
     function autoGrow(t){ t.style.height='auto'; t.style.height=t.scrollHeight+'px'; }
     function bounds(){ const s=Math.max(0,Math.min(23,range.start)); return {s, e:Math.max(s+1,Math.min(24,range.end))}; }
@@ -1743,23 +1863,26 @@
       }
       markNow();
     }
+    function touchDay(k){ meta[k]=Date.now(); }
     function onEdit(h, val){
       const k=key(view);
       if(!entries[k]) entries[k]={};
       if(val.trim()) entries[k][h]=val; else delete entries[k][h];
       if(!Object.keys(entries[k]).length) delete entries[k];
+      touchDay(k);
       clearTimeout(saveTimer); saveTimer=setTimeout(persist, 300);
+      schedulePush();
     }
     function shift(n){ view.setDate(view.getDate()+n); render(); }
     function copyPrev(){
       const prev=new Date(view); prev.setDate(prev.getDate()-1);
       const src=entries[key(prev)];
       if(!src){ flash('nothing to copy from '+DAY[prev.getDay()].toLowerCase()); return; }
-      const k=key(view); entries[k]=Object.assign({}, src, entries[k]||{}); persist(); render(); flash('copied from the previous day');
+      const k=key(view); entries[k]=Object.assign({}, src, entries[k]||{}); touchDay(k); persist(); render(); schedulePush(); flash('copied from the previous day');
     }
     function clearDay(){
       if(!confirm('Clear everything planned for '+dateEl.textContent+'?')) return;
-      delete entries[key(view)]; persist(); render();
+      delete entries[key(view)]; touchDay(key(view)); persist(); render(); schedulePush();
     }
     function applyRange(){
       let s=parseInt(startEl.value,10), e=parseInt(endEl.value,10);
@@ -1767,7 +1890,7 @@
       s=Math.max(0,Math.min(23,s)); e=Math.max(s+1,Math.min(24,e));
       range={start:s,end:e}; startEl.value=s; endEl.value=e;
       try{ localStorage.setItem(K_RANGE, JSON.stringify(range)); }catch(_){}
-      render();
+      render(); schedulePush();
     }
 
     document.getElementById('plUnlock').addEventListener('click', tryUnlock);

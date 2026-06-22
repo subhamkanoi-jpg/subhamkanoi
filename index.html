@@ -599,6 +599,85 @@
   .reveal.in{opacity:1; transform:none}
   [data-d="1"]{transition-delay:.08s}[data-d="2"]{transition-delay:.16s}[data-d="3"]{transition-delay:.24s}
   @media (prefers-reduced-motion: reduce){.reveal{opacity:1; transform:none}}
+
+  /* ───────── personal day planner — private, hidden from the public dock ───────── */
+  .pl-overlay{
+    position:fixed; inset:0; z-index:120; display:none;
+    align-items:flex-start; justify-content:center;
+    background:rgba(0,0,0,.55); backdrop-filter:blur(7px) saturate(1.1);
+    -webkit-backdrop-filter:blur(7px) saturate(1.1);
+    padding:clamp(14px,4vh,46px) clamp(12px,4vw,40px); overflow-y:auto;
+  }
+  .pl-overlay.open{display:flex}
+  .pl-panel{
+    width:min(820px,100%); background:var(--panel-strong);
+    border:1px solid var(--line); border-radius:14px;
+    box-shadow:0 30px 80px -20px var(--drop);
+    font-family:var(--mono); color:var(--cream); overflow:hidden;
+  }
+  .pl-head{
+    display:flex; align-items:center; gap:.8rem; flex-wrap:wrap;
+    padding:1.1rem clamp(1rem,3vw,1.6rem); border-bottom:1px solid var(--line);
+  }
+  .pl-title{font-family:var(--display); text-transform:uppercase; letter-spacing:.04em; font-size:1.05rem; font-weight:600; margin-right:auto}
+  .pl-title .pl-dim{color:var(--brass); font-size:.66rem; letter-spacing:.24em; margin-left:.4rem}
+  .pl-btn{
+    font-family:var(--mono); font-size:.66rem; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--cream-2); background:transparent; border:1px solid var(--line);
+    border-radius:8px; padding:.42rem .7rem; cursor:pointer; transition:color .2s, border-color .2s;
+  }
+  .pl-btn:hover{color:var(--brass); border-color:var(--brass-deep)}
+  .pl-x{border:none; font-size:1.2rem; padding:.1rem .5rem; line-height:1}
+
+  .pl-datebar{
+    display:flex; align-items:center; gap:.5rem; flex-wrap:wrap;
+    padding:.8rem clamp(1rem,3vw,1.6rem); border-bottom:1px solid var(--line-2);
+  }
+  .pl-date{font-family:var(--display); text-transform:uppercase; letter-spacing:.06em; font-size:.92rem; margin:0 .35rem; font-variant-numeric:tabular-nums}
+  .pl-nav{background:transparent; border:1px solid var(--line); color:var(--cream-2); border-radius:8px; width:30px; height:30px; cursor:pointer; font-size:1rem; line-height:1; transition:color .2s, border-color .2s}
+  .pl-nav:hover{color:var(--brass); border-color:var(--brass-deep)}
+  .pl-spacer{margin-left:auto}
+  .pl-rlabel{font-size:.6rem; letter-spacing:.14em; color:var(--dim); display:inline-flex; align-items:center; gap:.35rem}
+  .pl-range{width:48px; background:var(--ink-2); border:1px solid var(--line); border-radius:6px; color:var(--cream); font-family:var(--mono); padding:.24rem; text-align:center; font-variant-numeric:tabular-nums}
+  .pl-range:focus{outline:none; border-color:var(--brass-deep)}
+
+  .pl-grid{padding:.4rem clamp(.6rem,3vw,1.2rem) 1rem}
+  .pl-row{display:flex; gap:.7rem; align-items:flex-start; border-bottom:1px solid var(--line-2); padding:.15rem 0; position:relative}
+  .pl-row:last-child{border-bottom:none}
+  .pl-time{flex:0 0 56px; padding-top:.62rem; color:var(--dim); font-size:.72rem; letter-spacing:.05em; text-align:right; font-variant-numeric:tabular-nums}
+  .pl-input{
+    flex:1; background:transparent; border:none; resize:none; overflow:hidden;
+    color:var(--cream); font-family:var(--mono); font-size:.92rem; line-height:1.5;
+    padding:.5rem .6rem; border-radius:7px; min-height:2.1rem;
+  }
+  .pl-input::placeholder{color:var(--faint)}
+  .pl-input:focus{outline:none; background:rgba(230,189,106,.07)}
+  .pl-row.now .pl-time{color:var(--brass); font-weight:700}
+  .pl-row.now::before{content:""; position:absolute; left:-2px; top:0; bottom:0; width:2px; background:var(--brass)}
+
+  .pl-foot{display:flex; gap:.6rem; flex-wrap:wrap; align-items:center; padding:.9rem clamp(1rem,3vw,1.6rem); border-top:1px solid var(--line)}
+  .pl-note{color:var(--faint); font-size:.62rem; letter-spacing:.08em; margin-left:auto}
+
+  .pl-gate{padding:clamp(2rem,7vw,3.4rem) clamp(1.4rem,5vw,2.4rem); text-align:center}
+  .pl-gate h3{font-family:var(--display); text-transform:uppercase; letter-spacing:.05em; font-size:1.3rem; margin-bottom:.5rem}
+  .pl-gate p{color:var(--dim); font-size:.8rem; max-width:44ch; margin:0 auto 1.4rem; line-height:1.6}
+  .pl-pin{display:flex; gap:.6rem; justify-content:center; flex-wrap:wrap}
+  .pl-pin input{
+    background:var(--ink-2); border:1px solid var(--line); border-radius:9px;
+    color:var(--cream); font-family:var(--mono); font-size:1rem; letter-spacing:.3em;
+    padding:.7rem .9rem; width:min(220px,70vw); text-align:center;
+  }
+  .pl-pin input:focus{outline:none; border-color:var(--brass-deep)}
+  .pl-err{color:var(--terra); font-size:.72rem; min-height:1.1em; margin-top:.8rem; letter-spacing:.04em}
+  .pl-actions{margin-top:1.4rem; display:flex; gap:.6rem; justify-content:center}
+  .pl-reset{margin-top:1.6rem}
+  .pl-reset button{background:none; border:none; color:var(--faint); font-family:var(--mono); font-size:.6rem; letter-spacing:.1em; text-decoration:underline; cursor:pointer}
+  .pl-reset button:hover{color:var(--terra)}
+
+  @media (max-width:560px){
+    .pl-time{flex-basis:46px; font-size:.66rem}
+    .pl-title .pl-dim{display:none}
+  }
 </style>
 </head>
 
@@ -914,11 +993,58 @@
 
   </div>
 
+  <!-- ───────── personal day planner (private; opened via #day or Shift+D) ───────── -->
+  <div class="pl-overlay" id="plOverlay" role="dialog" aria-modal="true" aria-label="Personal day planner" hidden>
+    <div class="pl-panel">
+
+      <!-- locked -->
+      <div class="pl-gate" id="plGate">
+        <h3 id="plGateTitle">Private</h3>
+        <p id="plGateMsg">enter your PIN to open the day planner.</p>
+        <div class="pl-pin">
+          <input id="plPin1" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN" aria-label="PIN" />
+          <input id="plPin2" type="password" inputmode="numeric" autocomplete="off" placeholder="confirm PIN" aria-label="Confirm PIN" hidden />
+        </div>
+        <div class="pl-err" id="plErr" role="alert"></div>
+        <div class="pl-actions">
+          <button class="pl-btn" id="plUnlock" type="button">unlock</button>
+          <button class="pl-btn" id="plGateClose" type="button">close</button>
+        </div>
+        <div class="pl-reset"><button id="plReset" type="button">forgot PIN &mdash; reset everything</button></div>
+      </div>
+
+      <!-- unlocked -->
+      <div id="plMain" hidden>
+        <div class="pl-head">
+          <div class="pl-title">Day<span class="pl-dim">// structure the hours</span></div>
+          <button class="pl-btn" id="plLock" type="button">lock</button>
+          <button class="pl-btn pl-x" id="plClose" type="button" aria-label="Close planner">&times;</button>
+        </div>
+        <div class="pl-datebar">
+          <button class="pl-nav" id="plPrev" type="button" aria-label="Previous day">&lsaquo;</button>
+          <span class="pl-date" id="plDate">&mdash;</span>
+          <button class="pl-nav" id="plNext" type="button" aria-label="Next day">&rsaquo;</button>
+          <button class="pl-btn" id="plToday" type="button">today</button>
+          <span class="pl-spacer"></span>
+          <label class="pl-rlabel">FROM<input id="plStart" class="pl-range" type="number" min="0" max="23" aria-label="Day starts at hour" /></label>
+          <label class="pl-rlabel">TO<input id="plEnd" class="pl-range" type="number" min="1" max="24" aria-label="Day ends at hour" /></label>
+        </div>
+        <div class="pl-grid" id="plGrid"></div>
+        <div class="pl-foot">
+          <button class="pl-btn" id="plCopy" type="button">copy previous day</button>
+          <button class="pl-btn" id="plClear" type="button">clear this day</button>
+          <span class="pl-note" id="plSaved">saved locally &middot; this device only</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 <script>
   // ---- always open at home; never restore prior scroll ----
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   function goHome(){
-    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+    if (location.hash && location.hash !== '#day') history.replaceState(null, '', location.pathname + location.search);
     const html=document.documentElement, prev=html.style.scrollBehavior;
     html.style.scrollBehavior='auto'; window.scrollTo(0,0); html.style.scrollBehavior=prev;
   }
@@ -1511,6 +1637,168 @@
     audio.addEventListener('ended', ()=>{ audio.currentTime=START; audio.play().catch(()=>{}); });
     audio.addEventListener('pause', ()=>setOn(false));
     audio.addEventListener('play', ()=>setOn(true));
+  })();
+
+  /* ───────── personal day planner — private, on-device, hidden from the public dock ─────────
+     opens on the #day hash or Shift+D. PIN-gated (deterrence only — there is no server,
+     so the gate just keeps casual eyes out). every entry lives in this browser's
+     localStorage and is never committed or published. */
+  (function(){
+    const overlay=document.getElementById('plOverlay'); if(!overlay) return;
+    const gate=document.getElementById('plGate'), main=document.getElementById('plMain');
+    const pin1=document.getElementById('plPin1'), pin2=document.getElementById('plPin2');
+    const gateTitle=document.getElementById('plGateTitle'), gateMsg=document.getElementById('plGateMsg'), err=document.getElementById('plErr');
+    const grid=document.getElementById('plGrid'), dateEl=document.getElementById('plDate');
+    const startEl=document.getElementById('plStart'), endEl=document.getElementById('plEnd');
+    const saved=document.getElementById('plSaved');
+
+    const K_PIN='sk.day.pin', K_RANGE='sk.day.range', K_ENTRIES='sk.day.entries', K_SESSION='sk.day.unlocked';
+    const DAY=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    const MON=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    const REST='saved locally · this device only';
+
+    let view=new Date(), entries={}, range={start:6,end:23}, saveTimer=0, flashTimer=0;
+
+    function load(){
+      try{ entries=JSON.parse(localStorage.getItem(K_ENTRIES))||{}; }catch(e){ entries={}; }
+      try{ const r=JSON.parse(localStorage.getItem(K_RANGE)); if(r&&Number.isInteger(r.start)) range=r; }catch(e){}
+    }
+    function persist(){ try{ localStorage.setItem(K_ENTRIES, JSON.stringify(entries)); }catch(e){} }
+    function key(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+    function sameDay(a,b){ return key(a)===key(b); }
+    function flash(msg){ saved.textContent=msg; clearTimeout(flashTimer); flashTimer=setTimeout(()=>{ saved.textContent=REST; }, 2200); }
+
+    // deterrence-only hash; SHA-256 where available, tiny fallback otherwise
+    async function hash(s){
+      if(window.crypto && crypto.subtle){
+        const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode('sk·'+s));
+        return [...new Uint8Array(buf)].map(x=>x.toString(16).padStart(2,'0')).join('');
+      }
+      let h=5381; for(let i=0;i<s.length;i++) h=((h<<5)+h+s.charCodeAt(i))>>>0; return 'd'+h.toString(16);
+    }
+
+    function open(){
+      overlay.hidden=false; overlay.classList.add('open');
+      document.body.style.overflow='hidden';
+      if(sessionStorage.getItem(K_SESSION)==='1') showMain(); else showGate();
+    }
+    function close(){
+      overlay.classList.remove('open'); overlay.hidden=true;
+      document.body.style.overflow='';
+      if(location.hash==='#day') history.replaceState(null,'',location.pathname+location.search);
+    }
+
+    function showGate(){
+      main.hidden=true; gate.hidden=false; err.textContent='';
+      const isNew=!localStorage.getItem(K_PIN);
+      pin2.hidden=!isNew;
+      gateTitle.textContent=isNew?'Set a PIN':'Private';
+      gateMsg.textContent=isNew
+        ? 'this planner is yours alone. choose a PIN — it stays on this device and is never published.'
+        : 'enter your PIN to open the day planner.';
+      pin1.value=''; pin2.value='';
+      setTimeout(()=>pin1.focus(), 50);
+    }
+    async function tryUnlock(){
+      const isNew=!localStorage.getItem(K_PIN), v=pin1.value.trim();
+      if(v.length<4){ err.textContent='use at least 4 characters.'; return; }
+      if(isNew){
+        if(v!==pin2.value.trim()){ err.textContent='the two PINs don’t match.'; return; }
+        localStorage.setItem(K_PIN, await hash(v));
+      } else {
+        if(await hash(v)!==localStorage.getItem(K_PIN)){ err.textContent='wrong PIN.'; pin1.select(); return; }
+      }
+      sessionStorage.setItem(K_SESSION,'1'); showMain();
+    }
+    function lock(){ sessionStorage.removeItem(K_SESSION); showGate(); }
+    function resetAll(){
+      if(!confirm('This erases your PIN and every planned day on this device. There is no undo. Continue?')) return;
+      localStorage.removeItem(K_PIN); localStorage.removeItem(K_ENTRIES); localStorage.removeItem(K_RANGE);
+      sessionStorage.removeItem(K_SESSION); entries={}; range={start:6,end:23}; showGate();
+    }
+
+    function showMain(){
+      gate.hidden=true; main.hidden=false; load();
+      startEl.value=range.start; endEl.value=range.end; saved.textContent=REST;
+      render();
+    }
+    function autoGrow(t){ t.style.height='auto'; t.style.height=t.scrollHeight+'px'; }
+    function bounds(){ const s=Math.max(0,Math.min(23,range.start)); return {s, e:Math.max(s+1,Math.min(24,range.end))}; }
+    function markNow(){
+      const isToday=sameDay(view,new Date()), curHour=new Date().getHours();
+      grid.querySelectorAll('.pl-row').forEach(r=>r.classList.toggle('now', isToday && +r.dataset.h===curHour));
+    }
+    function render(){
+      const k=key(view), day=entries[k]||{}, {s,e}=bounds();
+      dateEl.textContent=DAY[view.getDay()]+' · '+String(view.getDate()).padStart(2,'0')+' '+MON[view.getMonth()]+' '+view.getFullYear();
+      grid.innerHTML='';
+      for(let h=s; h<e; h++){
+        const row=document.createElement('div'); row.className='pl-row'; row.dataset.h=h;
+        const lab=document.createElement('div'); lab.className='pl-time'; lab.textContent=String(h).padStart(2,'0')+':00';
+        const ta=document.createElement('textarea');
+        ta.className='pl-input'; ta.rows=1; ta.placeholder='—'; ta.value=day[h]||'';
+        ta.addEventListener('input', ()=>{ autoGrow(ta); onEdit(h, ta.value); });
+        row.appendChild(lab); row.appendChild(ta); grid.appendChild(row);
+        requestAnimationFrame(()=>autoGrow(ta));
+      }
+      markNow();
+    }
+    function onEdit(h, val){
+      const k=key(view);
+      if(!entries[k]) entries[k]={};
+      if(val.trim()) entries[k][h]=val; else delete entries[k][h];
+      if(!Object.keys(entries[k]).length) delete entries[k];
+      clearTimeout(saveTimer); saveTimer=setTimeout(persist, 300);
+    }
+    function shift(n){ view.setDate(view.getDate()+n); render(); }
+    function copyPrev(){
+      const prev=new Date(view); prev.setDate(prev.getDate()-1);
+      const src=entries[key(prev)];
+      if(!src){ flash('nothing to copy from '+DAY[prev.getDay()].toLowerCase()); return; }
+      const k=key(view); entries[k]=Object.assign({}, src, entries[k]||{}); persist(); render(); flash('copied from the previous day');
+    }
+    function clearDay(){
+      if(!confirm('Clear everything planned for '+dateEl.textContent+'?')) return;
+      delete entries[key(view)]; persist(); render();
+    }
+    function applyRange(){
+      let s=parseInt(startEl.value,10), e=parseInt(endEl.value,10);
+      if(isNaN(s)) s=6; if(isNaN(e)) e=23;
+      s=Math.max(0,Math.min(23,s)); e=Math.max(s+1,Math.min(24,e));
+      range={start:s,end:e}; startEl.value=s; endEl.value=e;
+      try{ localStorage.setItem(K_RANGE, JSON.stringify(range)); }catch(_){}
+      render();
+    }
+
+    document.getElementById('plUnlock').addEventListener('click', tryUnlock);
+    pin1.addEventListener('keydown', e=>{ if(e.key==='Enter'){ if(!pin2.hidden) pin2.focus(); else tryUnlock(); } });
+    pin2.addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+    document.getElementById('plReset').addEventListener('click', resetAll);
+    document.getElementById('plGateClose').addEventListener('click', close);
+    document.getElementById('plClose').addEventListener('click', close);
+    document.getElementById('plLock').addEventListener('click', lock);
+    document.getElementById('plPrev').addEventListener('click', ()=>shift(-1));
+    document.getElementById('plNext').addEventListener('click', ()=>shift(1));
+    document.getElementById('plToday').addEventListener('click', ()=>{ view=new Date(); render(); });
+    document.getElementById('plCopy').addEventListener('click', copyPrev);
+    document.getElementById('plClear').addEventListener('click', clearDay);
+    startEl.addEventListener('change', applyRange);
+    endEl.addEventListener('change', applyRange);
+
+    overlay.addEventListener('click', e=>{ if(e.target===overlay) close(); });
+    addEventListener('keydown', e=>{
+      if(e.key==='Escape' && overlay.classList.contains('open')){ close(); return; }
+      const typing=/^(input|textarea|select)$/i.test(e.target.tagName||'');
+      if((e.key==='D'||e.key==='d') && e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey && !typing && !overlay.classList.contains('open')){
+        e.preventDefault(); location.hash='#day';
+      }
+    });
+
+    function checkHash(){ if(location.hash==='#day') open(); }
+    addEventListener('hashchange', checkHash);
+    setInterval(()=>{ if(overlay.classList.contains('open') && !main.hidden) markNow(); }, 60000);
+
+    load(); checkHash();   // honour #day in the initial URL
   })();
 </script>
 </body>
